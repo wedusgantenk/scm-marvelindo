@@ -12,11 +12,11 @@ class Depo extends Model
     protected $fillable = [
         'id_cluster',
         'nama',
-        'alamat',             
+        'alamat',
     ];
 
     public function cluster()
     {
-        return $this->belongsTo(Cluster::class);
+        return $this->belongsTo(Cluster::class, 'id_cluster');
     }
 }

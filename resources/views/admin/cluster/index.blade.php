@@ -66,10 +66,8 @@ Cluster
                         </tbody>
                     </table>
                     <!-- End Table with row editing -->
-
                 </div>
             </div>
-
         </div>
     </div>
 </section>
@@ -100,14 +98,16 @@ Cluster
         $('#clusterForm').on('submit', function(e) {
             e.preventDefault();
             $.ajax({
-                url: '/admin/cluster',
+                url: '{{ route("admin.cluster.store") }}',
                 method: 'POST',
                 data: $(this).serialize(),
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
                 success: function(response) {
                     showAlert('Data berhasil ditambahkan', 'success');
                     $('#formTambahData').hide();
                     $('#clusterForm')[0].reset();
-                    // Refresh halaman atau tambahkan baris baru ke tabel
                     location.reload();
                 },
                 error: function(xhr) {
@@ -122,7 +122,6 @@ Cluster
             row.find('.edit-btn').hide();
             row.find('.save-btn, .cancel-btn').show();
 
-            // Simpan data asli
             originalData[row.data('id')] = {};
             row.find('.editable').each(function() {
                 var field = $(this).data('field');
@@ -142,7 +141,7 @@ Cluster
             });
 
             $.ajax({
-                url: '/admin/cluster/' + id,
+                url: '{{ route("admin.cluster.update", "") }}/' + id,
                 method: 'PUT',
                 data: {
                     ...data,
@@ -165,7 +164,6 @@ Cluster
             var row = $(this).closest('tr');
             var id = row.data('id');
 
-            // Kembalikan data asli
             if (originalData[id]) {
                 row.find('.editable').each(function() {
                     var field = $(this).data('field');
@@ -179,12 +177,12 @@ Cluster
             row.find('.edit-btn').show();
         });
 
-        $('.hapus-btn').on('click', function() {
+        $('#clusterTable').on('click', '.hapus-btn', function() {
             var row = $(this).closest('tr');
             var id = row.data('id');
             if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
                 $.ajax({
-                    url: '/admin/cluster/' + id,
+                    url: '{{ route("admin.cluster.delete", "") }}/' + id,
                     method: 'DELETE',
                     data: {
                         _token: '{{ csrf_token() }}'

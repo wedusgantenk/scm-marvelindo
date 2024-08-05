@@ -18,122 +18,49 @@ class DepoController extends Controller
 
     public function index()
     {
-        $client = new Client;
-        $url = "http://scmapi.satriatech.com/api/admin/depo";
-        $response = $client->request('GET', $url);
-        $content = $response->getBody()->getContents();
-        $contentArray = json_decode($content, true);
-        $data = $contentArray['data'];
-        return view('admin.depo.index', ['data' => $data]);
-    }
-
-    public function create()
-    {
-        $clientCls = new Client();
-        $urlCls = "http://scmapi.satriatech.com/api/admin/cluster";
-        $responseCls = $clientCls->request('GET', $urlCls);
-        $contentCls = $responseCls->getBody()->getContents();
-        $contentArrayCls = json_decode($contentCls, true);
-        $cluster = $contentArrayCls['data'];
-        return view('admin.depo.create', compact('cluster'));
+        $data = Depo::with('cluster')->get();
+        $clusters = Cluster::all();
+        return view('admin.depo.index', ['data' => $data, 'clusters' => $clusters]);
     }
 
     public function store(Request $request)
     {
-        $request->validate(
-            [
-                'nama' => 'required|unique:depo',
-                'cluster_id' => 'required|numeric',
-                'alamat' => 'required'
-            ],
-            [
-                'nama.required' => 'Nama depo harus diisi',
-                'nama.unique' => 'depo sudah ada',
-                'cluster_id.required' => 'cluster harus dipilih',
-                'cluster_id.numeric' => 'cluster harus dipilih',
-                'alamat.required' => 'alamat harus diisi'
-            ]
-        );
-        $parameter = [
-            'nama' => $request->nama,
-            'alamat' => $request->alamat,
-            'id_cluster' => $request->cluster_id,
-        ];
-        $client = new Client;
-        $url = "http://scmapi.satriatech.com/api/admin/depo";
-        $response = $client->request('POST', $url, [
-            'headers' => [
-                'Content-type' => 'application/json'
-            ],
-            'body' => json_encode($parameter)
+        $request->validate([
+            'nama' => 'required|unique:depo',
+            'id_cluster' => 'required',
+            'alamat' => 'required',
+        ], [
+            'nama.required' => 'Nama depo harus diisi',
+            'nama.unique' => 'Depo sudah ada',
+            'id_cluster.required' => 'Cluster harus dipilih',
+            'alamat.required' => 'Alamat depo harus diisi',
         ]);
-        $content = $response->getBody()->getContents();
-        $contentArray = json_decode($content, true);
-        return redirect()->route('admin.depo')->with('success', 'depo telah ditambahkan');
-    }
 
-    public function edit($id)
-    {
-        $client = new Client();
-        $urlDepo = "http://scmapi.satriatech.com/api/admin/depo/$id";
-        $responseDepo = $client->request('GET', $urlDepo);
-        $contentDepo = $responseDepo->getBody()->getContents();
-        $contentArrayDepo = json_decode($contentDepo, true);
+        $depo = new Depo();
+        $depo->nama = $request->nama;
+        $depo->id_cluster = $request->id_cluster;
+        $depo->alamat = $request->alamat;
+        $depo->save();
 
-        $clientCls = new Client();
-        $urlCls = "http://scmapi.satriatech.com/api/admin/cluster";
-        $responseCls = $clientCls->request('GET', $urlCls);
-        $contentCls = $responseCls->getBody()->getContents();
-        $contentArrayCls = json_decode($contentCls, true);
-
-        if (!isset($contentArrayDepo['status']) || $contentArrayDepo['status'] !== true) {
-            $error = isset($contentArrayDepo['message']) ? $contentArrayDepo['message'] : "Unknown error occurred";
-            return redirect()->route('admin.depo')->withErrors($error);
-        } else {
-            $data = $contentArrayDepo['data'];
-            $cluster = $contentArrayCls['data'];
-            return view('admin.depo.edit', compact('data', 'cluster'));
-        }
+        return response()->json(['success' => true, 'message' => 'Depo berhasil ditambahkan']);
     }
 
     public function update(Request $request, $id)
     {
-        $client = new Client();
-        $urlDepo = "http://scmapi.satriatech.com/api/admin/depo/$id";
-        $responseDepo = $client->request('GET', $urlDepo);
-        $contentDepo = $responseDepo->getBody()->getContents();
-        $contentArrayDepo = json_decode($contentDepo, true);
-        $data = $contentArrayDepo['data'];
-        $request->validate([
-            'nama' => 'required|unique:depo,nama,' . $id . ',id',
-            'cluster_id' => 'required|numeric',
-        ], [
-            'nama.required' => 'Nama depo harus diisi',
-            'nama.unique' => 'Nama depo sudah ada',
-            'cluster_id.required' => 'Cluster harus dipilih',
-            'cluster_id.numeric' => 'Cluster harus berupa angka',
-        ]);
+        $depo = Depo::find($id);
+        $depo->nama = $request->nama;
+        $depo->id_cluster = $request->id_cluster;
+        $depo->alamat = $request->alamat;
+        $depo->save();
 
-        $dataToUpdate = [
-            'nama' => $request->nama,
-            'alamat' => $request->alamat,
-            'id_cluster' => $request->cluster_id,
-        ];
-
-        $client->request('PUT', $urlDepo, [
-            'json' => $dataToUpdate,
-        ]);
-
-        return redirect()->route('admin.depo')->with('success', 'depo telah diubah');
+        return response()->json(['success' => true, 'message' => 'Depo berhasil diperbarui']);
     }
 
     public function destroy($id)
     {
-        $client = new Client();
-        $url = "http://scmapi.satriatech.com/api/admin/depo/$id";
-        $response = $client->request('DELETE', $url);
-        $content = $response->getBody()->getContents();
-        $contentArray = json_decode($content, true);
-        return redirect()->route('admin.depo')->with('success', 'depo telah dihapus');
+        $depo = Depo::findOrFail($id);
+        $depo->delete();
+
+        return response()->json(['success' => true, 'message' => 'Depo berhasil dihapus']);
     }
 }

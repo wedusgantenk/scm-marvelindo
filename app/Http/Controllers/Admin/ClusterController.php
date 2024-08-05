@@ -20,11 +20,6 @@ class ClusterController extends Controller
         return view('admin.cluster.index', ['data' => $data]);
     }
 
-    public function create()
-    {
-        return view('admin.cluster.create');
-    }
-
     public function store(Request $request)
     {
         $request->validate(
@@ -34,9 +29,9 @@ class ClusterController extends Controller
             ],
             [
                 'nama.required' => 'Nama cluster harus diisi',
-                'nama.unique' => 'cluster sudah ada',
-                'kode_cluster.required' => 'kode cluster harus diisi',
-                'kode_cluster.unique' => 'kode cluster sudah ada',
+                'nama.unique' => 'Cluster sudah ada',
+                'kode_cluster.required' => 'Kode cluster harus diisi',
+                'kode_cluster.unique' => 'Kode cluster sudah ada',
             ]
         );
 
@@ -46,9 +41,8 @@ class ClusterController extends Controller
         $cluster->alamat = $request->alamat;
         $cluster->save();
 
-        return redirect()->back();
+        return response()->json(['success' => true, 'message' => 'Cluster berhasil ditambahkan']);
     }
-
 
     public function update(Request $request, $id)
     {
@@ -57,7 +51,8 @@ class ClusterController extends Controller
         $cluster->nama = $request->nama;
         $cluster->alamat = $request->alamat;
         $cluster->save();
-        return redirect()->back();
+
+        return response()->json(['success' => true, 'message' => 'Cluster berhasil diperbarui']);
     }
 
     public function destroy($id)
@@ -67,6 +62,7 @@ class ClusterController extends Controller
 
         return response()->json(['success' => true, 'message' => 'Cluster berhasil dihapus']);
     }
+
 
     public function export()
     {
