@@ -30,8 +30,13 @@
                                             <input type="email" class="form-control" id="email" name="email" required>
                                         </div>
                                         <div class="mb-3">
-                                            <label for="nama_depo" class="form-label">Depo</label>
-                                            <input type="text" class="form-control" id="nama_depo" name="nama_depo" required>
+                                            <label for="id_depo" class="form-label">Depo</label>
+                                            <select class="form-select" id="id_depo" name="id_depo" required>
+                                                <option value="">--Pilih--</option>
+                                                @foreach ($depo as $dp)
+                                                <option value="{{ $dp->id }}">{{ $dp->nama }}</option>
+                                                @endforeach
+                                            </select>
                                         </div>
                                         <div class="mb-3">
                                             <label for="area" class="form-label">Area</label>
@@ -95,14 +100,14 @@
                             <tr data-id="{{ $d['id'] }}">
                                 <td class="editable" data-field="nama">{{ $d['nama'] }}</td>
                                 <td class="editable" data-field="email">{{ $d['email'] }}</td>
-                                <td class="editable" data-field="nama_depo">{{ $d->depo->nama ?? 'NA'}}</td>
+                                <td class="editable" data-field="id_depo" data-depo-id="{{ $d->depo->id ?? '' }}">{{ $d->depo->nama ?? 'NA'}}</td>
                                 <td class="editable" data-field="area">{{ $d['area'] ?? '' }}</td>
                                 <td class="editable" data-field="status">{{ $d['status'] ?? '' }}</td>
                                 <td>
                                     <button class="btn btn-primary btn-sm editBtn" data-id="{{ $d['id'] }}">Edit</button>
                                     <button class="btn btn-sm btn-success saveBtn" style="display:none;">Simpan</button>
                                     <button class="btn btn-sm btn-danger cancelBtn" style="display:none;">Batal</button>
-                                    <button class="btn btn-danger btn-sm deleteBtn" data-id="{{ $d['id'] }}">Hapus</button>
+                                    <button class="btn btn-danger btn-sm deleteBtn" data-id="{{ $d['id'] }}" data-bs-toggle="modal" data-bs-target="#konfirmasiHapusModal">Hapus</button>
                                 </td>
                             </tr>
                             @empty
@@ -151,7 +156,18 @@
                     location.reload();
                 },
                 error: function(xhr) {
-                    showAlert('Gagal menambahkan data', 'danger');
+                    if (xhr.status === 422) {
+                        var errors = xhr.responseJSON.errors;
+                        var errorMessage = 'Gagal menambahkan data: ';
+                        $.each(errors, function(key, value) {
+                            errorMessage += value[0] + ' ';
+                        });
+                        showAlert(errorMessage, 'danger');
+                    } else if (xhr.status === 500) {
+                        showAlert('Terjadi kesalahan server. Silakan coba lagi nanti.', 'danger');
+                    } else {
+                        showAlert('Gagal menambahkan data', 'danger');
+                    }
                 }
             });
         });
@@ -164,6 +180,14 @@
                 if (field === 'status') {
                     var selectHtml = '<select class="form-select"><option value="aktif" ' + (value === 'aktif' ? 'selected' : '') + '>Aktif</option><option value="non-aktif" ' + (value === 'non-aktif' ? 'selected' : '') + '>Non-Aktif</option></select>';
                     $(this).html(selectHtml);
+                } else if (field === 'id_depo') {
+                    var depoId = $(this).data('depo-id');
+                    var selectHtml = '<select class="form-select">';
+                    @foreach ($depo as $dp)
+                        selectHtml += '<option value="{{ $dp->id }}" ' + (depoId == {{ $dp->id }} ? 'selected' : '') + '>{{ $dp->nama }}</option>';
+                    @endforeach
+                    selectHtml += '</select>';
+                    $(this).html(selectHtml);
                 } else {
                     $(this).html('<input type="text" class="form-control" value="' + value + '">');
                 }
@@ -174,11 +198,7 @@
             originalData[row.data('id')] = {};
             row.find('.editable').each(function() {
                 var field = $(this).data('field');
-                if (field === 'status') {
-                    originalData[row.data('id')][field] = $(this).find('select').val();
-                } else {
-                    originalData[row.data('id')][field] = $(this).find('input').val();
-                }
+                originalData[row.data('id')][field] = $(this).find('input, select').val();
             });
         });
 
@@ -189,12 +209,7 @@
 
             row.find('.editable').each(function() {
                 var field = $(this).data('field');
-                if (field === 'status') {
-                    var value = $(this).find('select').val();
-                } else {
-                    var value = $(this).find('input').val();
-                }
-                data[field] = value;
+                data[field] = $(this).find('input, select').val();
             });
 
             $.ajax({
@@ -208,20 +223,23 @@
                     showAlert('Data berhasil diperbarui', 'success');
                     row.find('.editable').each(function() {
                         var field = $(this).data('field');
-                        if (field === 'status') {
-                            var value = $(this).find('select').val();
+                        if (field === 'id_depo') {
+                            $(this).text($(this).find('select option:selected').text());
+                            $(this).data('depo-id', data[field]);
                         } else {
-                            var value = $(this).find('input').val();
+                            $(this).text(data[field]);
                         }
-                        $(this).text(value);
                     });
                     row.find('.saveBtn, .cancelBtn').hide();
                     row.find('.editBtn').show();
                     delete originalData[id];
-                    location.reload();
                 },
                 error: function(xhr) {
-                    showAlert('Gagal memperbarui data', 'danger');
+                    if (xhr.status === 500) {
+                        showAlert('Terjadi kesalahan server. Silakan coba lagi nanti.', 'danger');
+                    } else {
+                        showAlert('Gagal memperbarui data', 'danger');
+                    }
                 }
             });
         });
@@ -233,8 +251,8 @@
             if (originalData[id]) {
                 row.find('.editable').each(function() {
                     var field = $(this).data('field');
-                    if (field === 'status') {
-                        $(this).text(originalData[id][field]);
+                    if (field === 'id_depo') {
+                        $(this).text($(this).find('select option:selected').text());
                     } else {
                         $(this).text(originalData[id][field]);
                     }
@@ -242,11 +260,6 @@
                 delete originalData[id];
             }
 
-            row.find('.editable').each(function() {
-                var field = $(this).data('field');
-                var value = $(this).text();
-                $(this).html(value);
-            });
             row.find('.saveBtn, .cancelBtn').hide();
             row.find('.editBtn').show();
         });
@@ -269,11 +282,14 @@
                     $('#konfirmasiHapusModal').modal('hide');
                 },
                 error: function(xhr) {
-                    showAlert('Gagal menghapus data', 'danger');
+                    if (xhr.status === 500) {
+                        showAlert('Terjadi kesalahan server. Silakan coba lagi nanti.', 'danger');
+                    } else {
+                        showAlert('Gagal menghapus data', 'danger');
+                    }
                 }
             });
         });
     });
 </script>
 @endpush
-
