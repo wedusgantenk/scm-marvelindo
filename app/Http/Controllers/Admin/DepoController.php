@@ -5,9 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Depo;
 use App\Models\Cluster;
-use GuzzleHttp\Client;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 
 class DepoController extends Controller
 {
@@ -25,16 +23,19 @@ class DepoController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'nama' => 'required|unique:depo',
-            'id_cluster' => 'required',
-            'alamat' => 'required',
-        ], [
-            'nama.required' => 'Nama depo harus diisi',
-            'nama.unique' => 'Depo sudah ada',
-            'id_cluster.required' => 'Cluster harus dipilih',
-            'alamat.required' => 'Alamat depo harus diisi',
-        ]);
+        $request->validate(
+            [
+                'nama' => 'required|unique:depo',
+                'id_cluster' => 'required',
+                'alamat' => 'required',
+            ],
+            [
+                'nama.required' => 'Nama depo harus diisi',
+                'nama.unique' => 'Depo sudah ada',
+                'id_cluster.required' => 'Cluster harus dipilih',
+                'alamat.required' => 'Alamat depo harus diisi',
+            ]
+        );
 
         $depo = new Depo();
         $depo->nama = $request->nama;
@@ -64,3 +65,4 @@ class DepoController extends Controller
         return response()->json(['success' => true, 'message' => 'Depo berhasil dihapus']);
     }
 }
+
