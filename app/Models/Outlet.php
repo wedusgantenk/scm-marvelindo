@@ -26,7 +26,7 @@ class Outlet extends Model
         return $this->belongsTo(Depo::class);
     }
 
-    public function jenis_outlet()
+    public function jenisOutlet()
     {
         return $this->belongsTo(JenisOutlet::class);
     }

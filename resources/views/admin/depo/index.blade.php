@@ -27,6 +27,7 @@
                                         <div class="mb-3">
                                             <label for="id_cluster" class="form-label">Cluster</label>
                                             <select class="form-select" id="id_cluster" name="id_cluster" required>
+                                                <option value="">--Pilih--</option>
                                                 @foreach ($clusters as $cluster)
                                                 <option value="{{ $cluster->id }}">{{ $cluster->nama }}</option>
                                                 @endforeach

@@ -6,8 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Cluster;
 use App\Models\Depo;
 use App\Models\Petugas;
-use App\Models\User;
-use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
@@ -21,31 +19,10 @@ class PetugasController extends Controller
 
     public function index()
     {
-        $client = new Client;
-        $url = "http://scmapi.satriatech.com/api/admin/petugas";
-        $response = $client->request('GET', $url);
-        $content = $response->getBody()->getContents();
-        $contentArray = json_decode($content, true);
-        $data = $contentArray['data'];
-        return view('admin.petugas.index', ['data' => $data]);
-    }
-
-    public function create()
-    {
-        $clienta = new Client;
-        $urla = "http://scmapi.satriatech.com/api/admin/cluster";
-        $responsea = $clienta->request('GET', $urla);
-        $contenta = $responsea->getBody()->getContents();
-        $contentArraya = json_decode($contenta, true);
-        $cluster = $contentArraya['data'];
-
-        $clientb = new Client;
-        $urlb = "http://scmapi.satriatech.com/api/admin/depo";
-        $responseb = $clientb->request('GET', $urlb);
-        $contentb = $responseb->getBody()->getContents();
-        $contentArrayb = json_decode($contentb, true);
-        $depo = $contentArrayb['data'];
-        return view('admin.petugas.create', compact('cluster', 'depo'));
+        $cluster = Cluster::all();
+        $depo = Depo::all();
+        $data = Petugas::all();
+        return view('admin.petugas.index', compact('data', 'cluster', 'depo'));
     }
 
     public function store(Request $request)
@@ -78,70 +55,21 @@ class PetugasController extends Controller
             $jenis = $request['depo_id'];
         }
 
-        $parameter = [
+        Petugas::create([
             'username' => $request->username,
             'hak_akses' => $request->role,
             'password'  => Hash::make($request->password),
             'jenis' => $jenis,
             'bagian' => $request->bagian,
-        ];
-        $client = new Client;
-        $url = "http://scmapi.satriatech.com/api/admin/petugas";
-        $response = $client->request('POST', $url, [
-            'headers' => [
-                'Content-type' => 'application/json'
-            ],
-            'body' => json_encode($parameter)
         ]);
-        $content = $response->getBody()->getContents();
-        $contentArray = json_decode($content, true);
 
-        return redirect()->route('admin.petugas')->with('success', 'User ' . $request->name . ' telah ditambahkan');
-    }
-
-    public function edit($id)
-    {
-        $client = new Client;
-        $url = "http://scmapi.satriatech.com/api/admin/petugas/$id";
-        $response = $client->request('GET', $url);
-        $content = $response->getBody()->getContents();
-        $contentArray = json_decode($content, true);
-        $data = $contentArray['data'];
-
-        $clienta = new Client;
-        $urla = "http://scmapi.satriatech.com/api/admin/cluster";
-        $responsea = $clienta->request('GET', $urla);
-        $contenta = $responsea->getBody()->getContents();
-        $contentArraya = json_decode($contenta, true);
-        $cluster = $contentArraya['data'];
-
-        $clientb = new Client;
-        $urlb = "http://scmapi.satriatech.com/api/admin/depo";
-        $responseb = $clientb->request('GET', $urlb);
-        $contentb = $responseb->getBody()->getContents();
-        $contentArrayb = json_decode($contentb, true);
-        $depo = $contentArrayb['data'];
-
-        if (!isset($contentArray['status']) || $contentArray['status'] !== true) {
-            $error = isset($contentArray['message']) ? $contentArray['message'] : "Unknown error occurred";
-            return redirect()->route('admin.petugas')->withErrors($error);
-        } else {
-            $data = $contentArray['data'];
-            $cluster = $contentArraya['data'];
-            $depo = $contentArrayb['data'];
-
-            return view('admin.petugas.edit', compact('data', 'cluster', 'depo'));
-        }
+        return redirect()->route('admin.petugas')->with('success', 'User ' . $request->username . ' telah ditambahkan');
     }
 
     public function update(Request $request, $id)
     {
-        $client = new Client();
-        $url = "http://scmapi.satriatech.com/api/admin/petugas/$id";
-        $response = $client->request('GET', $url);
-        $content = $response->getBody()->getContents();
-        $contentArray = json_decode($content, true);
-        $data = $contentArray['data'];
+        $petugas = Petugas::findOrFail($id);
+
         if (isset($request->password)) {
             $request->validate([
                 'username' => ['required', 'string', 'max:50'],
@@ -187,21 +115,18 @@ class PetugasController extends Controller
                 'bagian' => $request->bagian,
             ];
         }
-        $client->request('PUT', $url, [
-            'json' => $dataToUpdate,
-        ]);
-        return redirect()->route('admin.petugas')->with('success', 'User ' . $request->name . ' telah dubah');
+
+        $petugas->update($dataToUpdate);
+        return redirect()->route('admin.petugas')->with('success', 'User ' . $request->username . ' telah diubah');
     }
+
     public function destroy($id)
     {
-
-        $client = new Client();
-        $url = "http://scmapi.satriatech.com/api/admin/petugas/$id";
-        $response = $client->request('DELETE', $url);
-        $content = $response->getBody()->getContents();
-        $contentArray = json_decode($content, true);
-        return redirect()->route('admin.petugas')->with('success', 'petugas telah dihapus');
+        $petugas = Petugas::findOrFail($id);
+        $petugas->delete();
+        return redirect()->route('admin.petugas')->with('success', 'Petugas telah dihapus');
     }
+
     public function logout(Request $request)
     {
         Auth::logout();
