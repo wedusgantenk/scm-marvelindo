@@ -18,16 +18,18 @@ class TransaksiDepoDetail extends Model
 
     public function barang()
     {
-        return $this->belongsTo(Barang::class,'id_barang');
+        return $this->belongsTo(Barang::class,'id_barang', 'id');
     }
 
-    public function transaksi()
-    {
-        return $this->belongsTo(TransaksiDepo::class,'id_transaksi', 'id');
-    }
+    public function transaksiDepo()
+{
+    return $this->belongsTo(TransaksiDepo::class, 'id_transaksi');
+}
 
     public function detail()
     {
         return $this->belongsTo(DetailBarang::class,'kode_unik', 'id');
     }
+
+   
 }

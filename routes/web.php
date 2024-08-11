@@ -62,7 +62,7 @@ Route::get('transaksi/distribusi_depo', [App\Http\Controllers\Admin\TransaksiDep
 Route::post('transaksi/distribusi_depo', [App\Http\Controllers\Admin\TransaksiDepoController::class, 'store'])->name('admin.transaksi_distribusi_depo.store')->middleware(['checkRole:admin']);
 Route::put('transaksi/distribusi_depo/{id}', [App\Http\Controllers\Admin\TransaksiDepoController::class, 'update'])->name('admin.transaksi_distribusi_depo.update')->middleware(['checkRole:admin']);
 Route::delete('transaksi/distribusi_depo/{id}', [App\Http\Controllers\Admin\TransaksiDepoController::class, 'destroy'])->name('admin.transaksi_distribusi_depo.delete')->middleware(['checkRole:admin']);
-Route::get('transaksi/distribusi_depo/import', [App\Http\Controllers\Admin\TransaksiDepoController::class, 'import'])->name('admin.transaksi_distribusi_depo.import')->middleware(['checkRole:admin']);
+// Route::get('transaksi/distribusi_depo/import', [App\Http\Controllers\Admin\TransaksiDepoController::class, 'import'])->name('admin.transaksi_distribusi_depo.import')->middleware(['checkRole:admin']);
 Route::post('transaksi/distribusi_depo/import', [App\Http\Controllers\Admin\TransaksiDepoController::class, 'import_excel'])->name('admin.transaksi_distribusi_depo.import_excel')->middleware(['checkRole:admin']);
 Route::get('transaksi/distribusi_depo/histori/{id}', [App\Http\Controllers\Admin\TransaksiDepoController::class, 'histori'])->name('admin.transaksi_distribusi_depo.histori')->middleware(['checkRole:admin']);
 
@@ -74,7 +74,7 @@ Route::get('transaksi/distribusi_sales/import', [App\Http\Controllers\Admin\Tran
 Route::post('transaksi/distribusi_sales/import', [App\Http\Controllers\Admin\TransaksiSalesController::class, 'import_excel'])->name('admin.transaksi_distribusi_sales.import_excel')->middleware(['checkRole:admin']);
 Route::get('transaksi/distribusi_sales/histori/{id}', [App\Http\Controllers\Admin\TransaksiSalesController::class, 'histori'])->name('admin.transaksi_distribusi_sales.histori')->middleware(['checkRole:admin']);
 
-Route::get('transaksi/distribusi_depo/detail', [App\Http\Controllers\Admin\TransaksiDepoDetailController::class, 'index'])->name('admin.transaksi_distribusi_depo.detail')->middleware(['checkRole:admin']);
+Route::get('transaksi/distribusi_depo/detail/{id_transaksi}', [App\Http\Controllers\Admin\TransaksiDepoDetailController::class, 'index'])->name('admin.transaksi_distribusi_depo.detail')->middleware(['checkRole:admin']);
 Route::post('transaksi/distribusi_depo/detail', [App\Http\Controllers\Admin\TransaksiDepoDetailController::class, 'store'])->name('admin.transaksi_distribusi_depo.detail.store')->middleware(['checkRole:admin']);
 Route::put('transaksi/distribusi_depo/detail/{id}', [App\Http\Controllers\Admin\TransaksiDepoDetailController::class, 'update'])->name('admin.transaksi_distribusi_depo.detail.update')->middleware(['checkRole:admin']);
 Route::delete('transaksi/distribusi_depo/detail/{id}', [App\Http\Controllers\Admin\TransaksiDepoDetailController::class, 'destroy'])->name('admin.transaksi_distribusi_depo.detail.delete')->middleware(['checkRole:admin']);
