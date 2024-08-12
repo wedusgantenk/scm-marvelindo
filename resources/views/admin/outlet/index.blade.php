@@ -24,6 +24,7 @@ Outlet
                                 </div>
                                 <div class="modal-body">
                                     <form id="outletForm">
+                                        @csrf
                                         <div class="mb-3">
                                             <label for="nama" class="form-label">Nama Outlet</label>
                                             <input type="text" class="form-control" id="nama" name="nama" required>
@@ -104,9 +105,9 @@ Outlet
                             <tr data-id="{{ $outlet->id }}">
                                 <td>{{ $index + 1 }}</td>
                                 <td class="editable" data-field="nama">{{ $outlet->nama }}</td>
-                                <td class="editable" data-field="bts_id">{{ $outlet->bts->nama ?? 'N/A' }}</td>
-                                <td class="editable" data-field="jenis_id">{{ $outlet->jenisOutlet->nama ?? 'N/A' }}</td>
-                                <td class="editable" data-field="depo_id">{{ $outlet->depo->nama ?? 'N/A' }}</td>
+                                <td class="editable" data-field="bts_id" data-bts-id="{{ $outlet->bts->id ?? '' }}">{{ $outlet->bts->nama ?? 'N/A' }}</td>
+                                <td class="editable" data-field="jenis_id" data-jenis-id="{{ $outlet->jenisOutlet->id ?? '' }}">{{ $outlet->jenisOutlet->nama ?? 'N/A' }}</td>
+                                <td class="editable" data-field="depo_id" data-depo-id="{{ $outlet->depo->id ?? '' }}">{{ $outlet->depo->nama ?? 'N/A' }}</td>
                                 <td>
                                     <button class="btn btn-sm btn-primary edit-btn">Edit</button>
                                     <button class="btn btn-sm btn-success save-btn" style="display:none;">Simpan</button>
@@ -158,14 +159,44 @@ Outlet
                     location.reload();
                 },
                 error: function(xhr) {
-                    showAlert('Gagal menambahkan data', 'danger');
+                    console.log(xhr.responseText);
+                    showAlert('Gagal menambahkan data: ' + xhr.responseText, 'danger');
                 }
             });
         });
 
         $('#outletTable').on('click', '.edit-btn', function() {
             var row = $(this).closest('tr');
-            row.find('.editable').attr('contenteditable', true).addClass('editing');
+            row.find('.editable').each(function() {
+                var field = $(this).data('field');
+                var currentText = $(this).text();
+                var currentId = $(this).data(field.replace('_id', '-id'));
+
+                if (field === 'bts_id' || field === 'jenis_id' || field === 'depo_id') {
+                    var selectHtml = '<select class="form-select editing-select" data-field="' + field + '">';
+                    selectHtml += '<option value="">--Pilih--</option>';
+
+                    if (field === 'bts_id') {
+                        @foreach ($bts as $bt)
+                            selectHtml += '<option value="{{ $bt->id }}" ' + (currentId == {{ $bt->id }} ? 'selected' : '') + '>{{ $bt->nama }}</option>';
+                        @endforeach
+                    } else if (field === 'jenis_id') {
+                        @foreach ($jenisOutlet as $jo)
+                            selectHtml += '<option value="{{ $jo->id }}" ' + (currentId == {{ $jo->id }} ? 'selected' : '') + '>{{ $jo->nama }}</option>';
+                        @endforeach
+                    } else if (field === 'depo_id') {
+                        @foreach ($depo as $dp)
+                            selectHtml += '<option value="{{ $dp->id }}" ' + (currentId == {{ $dp->id }} ? 'selected' : '') + '>{{ $dp->nama }}</option>';
+                        @endforeach
+                    }
+
+                    selectHtml += '</select>';
+                    $(this).html(selectHtml);
+                } else {
+                    $(this).attr('contenteditable', true);
+                }
+                $(this).addClass('editing');
+            });
             row.find('.edit-btn').hide();
             row.find('.save-btn, .cancel-btn').show();
 
@@ -183,16 +214,24 @@ Outlet
 
             row.find('.editable').each(function() {
                 var field = $(this).data('field');
-                var value = $(this).text();
+                var value;
+                if ($(this).find('select').length) {
+                    value = $(this).find('select').val();
+                    var selectedText = $(this).find('select option:selected').text();
+                    $(this).text(selectedText);
+                } else {
+                    value = $(this).text();
+                }
                 data[field] = value;
             });
 
             $.ajax({
                 url: '{{ route("admin.outlet.update", "") }}/' + id,
-                method: 'PUT',
+                method: 'POST',
                 data: {
                     ...data,
-                    _token: '{{ csrf_token() }}'
+                    _token: '{{ csrf_token() }}',
+                    _method: 'PUT'
                 },
                 success: function(response) {
                     showAlert('Data berhasil diperbarui', 'success');
@@ -202,7 +241,8 @@ Outlet
                     delete originalData[id];
                 },
                 error: function(xhr) {
-                    showAlert('Gagal memperbarui data', 'danger');
+                    console.log(xhr.responseText);
+                    showAlert('Gagal memperbarui data: ' + xhr.responseText, 'danger');
                 }
             });
         });
@@ -232,9 +272,10 @@ Outlet
             var id = rowToDelete.data('id');
             $.ajax({
                 url: '{{ route("admin.outlet.delete", "") }}/' + id,
-                method: 'DELETE',
+                method: 'POST',
                 data: {
-                    _token: '{{ csrf_token() }}'
+                    _token: '{{ csrf_token() }}',
+                    _method: 'DELETE'
                 },
                 success: function(response) {
                     showAlert('Data berhasil dihapus', 'success');
@@ -242,7 +283,8 @@ Outlet
                     $('#konfirmasiHapusModal').modal('hide');
                 },
                 error: function(xhr) {
-                    showAlert('Gagal menghapus data', 'danger');
+                    console.log(xhr.responseText);
+                    showAlert('Gagal menghapus data: ' + xhr.responseText, 'danger');
                 }
             });
         });

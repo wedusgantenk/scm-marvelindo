@@ -18,16 +18,16 @@ class Outlet extends Model
 
     public function bts()
     {
-        return $this->belongsTo(Bts::class);
-    }
-
-    public function depo()
-    {
-        return $this->belongsTo(Depo::class);
+        return $this->belongsTo(Bts::class, 'id_bts');
     }
 
     public function jenisOutlet()
     {
-        return $this->belongsTo(JenisOutlet::class);
+        return $this->belongsTo(JenisOutlet::class, 'id_jenis');
+    }
+
+    public function depo()
+    {
+        return $this->belongsTo(Depo::class, 'id_depo');
     }
 }

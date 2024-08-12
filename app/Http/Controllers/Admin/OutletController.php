@@ -28,10 +28,10 @@ class OutletController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama' => 'required|unique:outlets',
+            'nama' => 'required|unique:outlet',
             'bts_id' => 'required|exists:bts,id',
-            'jenis_id' => 'required|exists:jenis_outlets,id',
-            'depo_id' => 'required|exists:depos,id',
+            'jenis_id' => 'required|exists:jenis_outlet,id',
+            'depo_id' => 'required|exists:depo,id',
         ], [
             'nama.required' => 'Nama outlet harus diisi',
             'nama.unique' => 'Outlet sudah ada',
@@ -43,7 +43,12 @@ class OutletController extends Controller
             'depo_id.exists' => 'Depo tidak valid',
         ]);
 
-        Outlet::create($request->all());
+        $data = $request->all();
+        $data['id_bts'] = $request->bts_id;
+        $data['id_depo'] = $request->depo_id;
+        $data['id_jenis'] = $request->jenis_id;
+
+        Outlet::create($data);
 
         return redirect()->route('admin.outlet')->with('success', 'Outlet telah ditambahkan');
     }
@@ -53,10 +58,10 @@ class OutletController extends Controller
         $outlet = Outlet::findOrFail($id);
 
         $request->validate([
-            'nama' => 'required|unique:outlets,nama,' . $id,
+            'nama' => 'required|unique:outlet,nama,' . $id,
             'bts_id' => 'required|exists:bts,id',
-            'jenis_id' => 'required|exists:jenis_outlets,id',
-            'depo_id' => 'required|exists:depos,id',
+            'jenis_id' => 'required|exists:jenis_outlet,id',
+            'depo_id' => 'required|exists:depo,id',
         ], [
             'nama.required' => 'Nama outlet harus diisi',
             'nama.unique' => 'Nama outlet sudah ada',
@@ -68,9 +73,14 @@ class OutletController extends Controller
             'depo_id.exists' => 'Depo tidak valid',
         ]);
 
-        $outlet->update($request->all());
+        $data = $request->all();
+        $data['id_bts'] = $request->bts_id;
+        $data['id_depo'] = $request->depo_id;
+        $data['id_jenis'] = $request->jenis_id;
 
-        return redirect()->route('admin.outlet')->with('success', 'Outlet telah diubah');
+        $outlet->update($data);
+
+        return response()->json(['message' => 'Outlet berhasil diperbarui']);
     }
 
     public function destroy($id)
@@ -78,6 +88,6 @@ class OutletController extends Controller
         $outlet = Outlet::findOrFail($id);
         $outlet->delete();
 
-        return redirect()->route('admin.outlet')->with('success', 'Outlet telah dihapus');
+        return response()->json(['message' => 'Outlet berhasil dihapus']);
     }
 }

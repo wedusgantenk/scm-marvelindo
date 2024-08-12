@@ -46,7 +46,7 @@ Distribusi ke Depo
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    
+
                                         <div class="mb-3">
                                             <label for="id_petugas" class="form-label">Nama Petugas</label>
                                             <select class="form-select" id="id_petugas" name="id_petugas" required>
@@ -83,7 +83,7 @@ Distribusi ke Depo
                                             <label for="status" class="form-label">Status</label>
                                             <input type="text" class="form-control" id="status" name="status" required>
                                         </div>
-                                        
+
                                         <button type="submit" class="btn btn-success">Simpan</button>
                                     </form>
                                 </div>
@@ -178,7 +178,7 @@ Distribusi ke Depo
                         </div>
                     </div>
 
-                    
+
 
                     <!-- Alert untuk hasil operasi -->
                     @if(session('success'))
@@ -213,7 +213,7 @@ Distribusi ke Depo
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $d->petugas->username }}</td>
                                 <td>{{ $d->cluster->nama }}</td>
-                                <td>{{ $d->depo->nama }}</td>
+                                <td>{{ $d->depo->nama ?? 'N/A' }}</td>
                                 <td>{{ $d->tanggal }}</td>
                                 <td>{{ $d->status }}</td>
                                 <td>
