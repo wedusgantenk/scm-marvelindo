@@ -192,6 +192,7 @@
                     $(this).html('<input type="text" class="form-control" value="' + value + '">');
                 }
             });
+
             row.find('.editBtn').hide();
             row.find('.saveBtn, .cancelBtn').show();
 
@@ -214,10 +215,11 @@
 
             $.ajax({
                 url: '{{ route("admin.sales.update", "") }}/' + id,
-                method: 'PUT',
+                method: 'POST', // Ubah method menjadi POST
                 data: {
                     ...data,
-                    _token: '{{ csrf_token() }}'
+                    _token: '{{ csrf_token() }}',
+                    _method: 'PATCH' // Tambahkan _method: 'PATCH' untuk simulasi PATCH request
                 },
                 success: function(response) {
                     showAlert('Data berhasil diperbarui', 'success');
@@ -235,7 +237,9 @@
                     delete originalData[id];
                 },
                 error: function(xhr) {
-                    if (xhr.status === 500) {
+                    if (xhr.status === 405) {
+                        showAlert('Metode tidak diizinkan. Silakan periksa konfigurasi rute.', 'danger');
+                    } else if (xhr.status === 500) {
                         showAlert('Terjadi kesalahan server. Silakan coba lagi nanti.', 'danger');
                     } else {
                         showAlert('Gagal memperbarui data', 'danger');
@@ -272,9 +276,10 @@
             var id = rowToDelete.data('id');
             $.ajax({
                 url: '{{ route("admin.sales.delete", "") }}/' + id,
-                method: 'DELETE',
+                method: 'POST', // Ubah method menjadi POST
                 data: {
-                    _token: '{{ csrf_token() }}'
+                    _token: '{{ csrf_token() }}',
+                    _method: 'DELETE' // Tambahkan _method: 'DELETE' untuk simulasi DELETE request
                 },
                 success: function(response) {
                     showAlert('Data berhasil dihapus', 'success');
@@ -282,7 +287,9 @@
                     $('#konfirmasiHapusModal').modal('hide');
                 },
                 error: function(xhr) {
-                    if (xhr.status === 500) {
+                    if (xhr.status === 405) {
+                        showAlert('Metode tidak diizinkan. Silakan periksa konfigurasi rute.', 'danger');
+                    } else if (xhr.status === 500) {
                         showAlert('Terjadi kesalahan server. Silakan coba lagi nanti.', 'danger');
                     } else {
                         showAlert('Gagal menghapus data', 'danger');

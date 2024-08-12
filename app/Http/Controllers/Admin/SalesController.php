@@ -40,11 +40,11 @@ class SalesController extends Controller
         'email' => $request->email,
         'id_depo' => $request->id_depo,
         'area' => $request->area,
-        'password' => Hash::make($request->password), // Hash the password
+        'password' => $request->password, // Hash the password
         'status' => $request->status,
     ]);
 
-    return redirect()->route('admin.sales.index')->with('success', 'Sales ' . $request->nama . ' telah ditambahkan');
+    return redirect()->route('admin.sales')->with('success', 'Sales ' . $request->nama . ' telah ditambahkan');
 }
 
 public function update(Request $request, $id)
@@ -69,18 +69,18 @@ public function update(Request $request, $id)
     ];
 
     if ($request->filled('password')) {
-        $data['password'] = Hash::make($request->password); // Hash the password if it's updated
+        $data['password'] = $request->password; // Hash the password if it's updated
     }
 
     $sales->update($data);
 
-    return redirect()->route('admin.sales.index')->with('success', 'Sales telah diubah');
+    return redirect()->route('admin.sales')->with('success', 'Sales telah diubah');
 }
 
     public function destroy($id)
     {
         $sales = Sales::findOrFail($id);
         $sales->delete();
-        return redirect()->route('admin.sales.index')->with('success', 'Sales telah dihapus');
+        return redirect()->route('admin.sales')->with('success', 'Sales telah dihapus');
     }
 }

@@ -74,8 +74,9 @@ BTS
                             <tr>
                                 <th>Nama</th>
                                 <th>Alamat</th>
-                                <th>Longitude</th>
                                 <th>Latitude</th>
+                                <th>Longitude</th>
+                                <th>Lokasi</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -84,8 +85,15 @@ BTS
                             <tr data-id="{{ $d['id'] }}">
                                 <td class="editable" data-field="nama">{{$d['nama']}}</td>
                                 <td class="editable" data-field="alamat">{{$d['alamat']}}</td>
-                                <td class="editable" data-field="long">{{$d['lang']}}</td>
                                 <td class="editable" data-field="lat">{{$d['lat']}}</td>
+                                <td class="editable" data-field="long">{{$d['lang']}}</td>
+                                <td class>
+                                    <a href="https://www.google.com/maps/search/?api=1&query={{
+
+                                     $d['lat'] }},{{ $d['long'] }}" target="_blank">
+                                        Lihat di Google Maps
+                                    </a>
+                                </td>
                                 <td>
                                     <button class="btn btn-sm btn-primary edit-btn">Edit</button>
                                     <button class="btn btn-sm btn-success save-btn" style="display:none;">Simpan</button>
