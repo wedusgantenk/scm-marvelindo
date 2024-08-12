@@ -10,8 +10,7 @@ class HargaBarang extends Model
     use HasFactory;
     protected $table = "harga_barang";
     protected $fillable = [
-        'id_barang',
-        'tanggal',
+        'id_barang',        
         'id_jenis_outlet',
         'harga'
     ];

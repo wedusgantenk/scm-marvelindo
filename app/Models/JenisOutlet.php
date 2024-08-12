@@ -12,4 +12,9 @@ class JenisOutlet extends Model
     protected $fillable = [
         'nama',        
     ];
+
+    public function hargaBarang()
+    {
+        return $this->hasMany(HargaBarang::class, 'id_jenis_outlet');
+    }
 }
