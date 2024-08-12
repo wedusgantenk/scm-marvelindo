@@ -29,10 +29,10 @@ class HargaBarangController extends Controller
 
         $columns = [
             [
-                'title' => 'Room Name',
-                'field' => 'room_name',
+                'title' => 'Nama Barang',
+                'field' => 'nama_barang',
                 'class' => 'col-md-2 center',
-                'editable' => false, // Membuat kolom Room Name tidak dapat diedit
+                'editable' => false, // Membuat kolom Nama Barang tidak dapat diedit
             ],
         ];
 
@@ -48,7 +48,7 @@ class HargaBarangController extends Controller
 
         $data = $barang->map(function($item) use ($jenis_outlets) {
             $row = [
-                'room_name' => $item->nama,
+                'nama_barang' => $item->nama,
             ];
 
             foreach ($jenis_outlets as $index => $outlet) {
@@ -69,12 +69,12 @@ class HargaBarangController extends Controller
     public function update(Request $request)
     {
         $data = $request->validate([
-            'room_name' => 'required|exists:barang,nama',
+            'nama_barang' => 'required|exists:barang,nama',
             'prices' => 'required|array',
             'prices.*' => 'numeric|min:0',
         ]);
 
-        $barang = Barang::where('nama', $data['room_name'])->firstOrFail();
+        $barang = Barang::where('nama', $data['nama_barang'])->firstOrFail();
 
         foreach ($data['prices'] as $outletName => $harga) {
             $id_jenis_outlet = JenisOutlet::where('nama', $outletName)->firstOrFail()->id;
