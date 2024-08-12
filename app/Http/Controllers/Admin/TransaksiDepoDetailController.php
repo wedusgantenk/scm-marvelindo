@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\TransaksiDepo;
 use App\Models\TransaksiDepoDetail;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class TransaksiDepoDetailController extends Controller
 {
@@ -14,42 +16,21 @@ class TransaksiDepoDetailController extends Controller
         $this->middleware('auth');
     }
 
-    public function index()
+    public function index($id_transaksi)
     {
-        $client = new Client;
+         // Ambil data transaksi depo berdasarkan ID yang dikirim
+        $data = TransaksiDepoDetail::with('transaksiDepo', 'barang', 'detail')
+        ->where('id', $id_transaksi)
+        ->firstOrFail();
 
-        // Fungsi untuk mengirim permintaan HTTP GET dan mengembalikan hasilnya sebagai array
-        function fetchData($client, $url)
-        {
-            try {
-                $response = $client->request('GET', $url);
-                $content = $response->getBody()->getContents();
-                return json_decode($content, true)['data'];
-            } catch (\Exception $e) {
-                // Log kesalahan atau tangani sesuai kebutuhan
-                return [];
-            }
-        }
+         // Debug hasil query
+        Log::info('Data hasil query:', ['data' => $data]);
 
-        $urlList = [
-            "http://scmapi.satriatech.com/api/admin/transaksidepodetail",
-            "http://scmapi.satriatech.com/api/admin/barang",
-            "http://scmapi.satriatech.com/api/admin/detailbarang",
-            "http://scmapi.satriatech.com/api/admin/transaksidepo",
-        ];
 
-        $data = fetchData($client, $urlList[0]);
-        $barang = fetchData($client, $urlList[1]);
-        $detail = fetchData($client, $urlList[2]);
-        $transaksi = fetchData($client, $urlList[3]);
-
-        return view('admin.transaksi.distribusi_depo.detail.index', [
-            'data' => $data,
-            'barang' => $barang,
-            'transaksi' => $transaksi,
-            'detail' => $detail
-        ]);
+        return view('admin.transaksi.distribusi_depo.detail.index', compact('data'));
     }
+
+    
 
     public function create()
     {

@@ -9,10 +9,14 @@ use App\Models\Cluster;
 use App\Models\Depo;
 use App\Models\TransaksiDepo;
 use App\Models\TransaksiDepoDetail;
+use Exception;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 
 class TransaksiDepoController extends Controller
@@ -24,175 +28,102 @@ class TransaksiDepoController extends Controller
 
     public function index()
     {
-        $data = TransaksiDepo::with('cluster', 'depo')->get();
+        $data = TransaksiDepo::with(['cluster', 'depo', 'petugas'])->get()->map(function ($item) {
+            // Mengubah format tanggal ke format yang diperlukan untuk input date HTML
+            $item->formatted_tanggal = Carbon::parse($item->tanggal)->format('Y-m-d');
+            return $item;
+        });
         return view('admin.transaksi.distribusi_depo.index', compact('data'));
     }
 
     public function create()
     {
-        $clientCls = new Client();
-        $urlCls = "http://scmapi.satriatech.com/api/admin/cluster";
-        $responseCls = $clientCls->request('GET', $urlCls);
-        $contentCls = $responseCls->getBody()->getContents();
-        $contentArrayCls = json_decode($contentCls, true);
-        $cluster = $contentArrayCls['data'];
-
-        $clientb = new Client;
-        $urlb = "http://scmapi.satriatech.com/api/admin/petugas";
-        $responseb = $clientb->request('GET', $urlb);
-        $contentb = $responseb->getBody()->getContents();
-        $contentArrayb = json_decode($contentb, true);
-        $petugas = $contentArrayb['data'];
-
-        $clientc = new Client;
-        $urlc = "http://scmapi.satriatech.com/api/admin/depo";
-        $responsec = $clientc->request('GET', $urlc);
-        $contentc = $responsec->getBody()->getContents();
-        $contentArrayc = json_decode($contentc, true);
-        $depo = $contentArrayc['data'];
-
-        return view('admin.transaksi.distribusi_depo.create', compact('cluster', 'depo', 'petugas'));
+        
     }
 
     public function store(Request $request)
     {
-        $request->validate(
-            [
-                'id_petugas' => 'required|numeric',
-                'id_cluster' => 'required|numeric',
-                'id_depo' => 'required|numeric',
-                'tanggal' => 'required'
-            ],
-            [
-                'id_petugas.required' => 'petugas harus dipilih',
-                'id_petugas.numeric' => 'petugas harus dipilih',
-                'id_cluster.required' => 'cluster harus dipilih',
-                'id_cluster.numeric' => 'cluster harus dipilih',
-                'id_depo.required' => 'depo harus dipilih',
-                'id_depo.numeric' => 'depo harus dipilih',
-                'tanggal.required' => 'tanggal harus diisi'
-            ]
-        );
-        $parameter = [
-            'tanggal' => $request->tanggal,
-            'id_petugas' => $request->id_petugas,
-            'id_cluster' => $request->id_cluster,
-            'id_depo' => $request->id_depo,
-            'status' => 'true',
-        ];
-        $client = new Client;
-        $url = "http://scmapi.satriatech.com/api/admin/transaksidepo";
-        $response = $client->request('POST', $url, [
-            'headers' => [
-                'Content-type' => 'application/json'
-            ],
-            'body' => json_encode($parameter)
+
+        $validator = Validator::make($request->all(), [
+            'id_petugas' => 'required|int|exists:petugas,id',
+            'id_cluster' => 'required|int|exists:cluster,id',
+            'id_depo' => 'required|int|exists:depo,id',
+            'tanggal' => 'required|date',
+            'status' => 'required|string|max:255',
         ]);
-        $content = $response->getBody()->getContents();
-        $contentArray = json_decode($content, true);
-        return redirect()->route('admin.transaksi.distribusi_depo')->with('success', 'depo telah ditambahkan');
+
+          // Jika validasi gagal
+    if ($validator->fails()) {
+        return redirect()->back()->withErrors($validator)->withInput();
     }
+
+
+    $data = new TransaksiDepo();
+    
+    $data->id_petugas = $request->id_petugas;
+    $data->id_cluster = $request->id_cluster;
+    $data->id_depo = $request->id_depo;
+    $data->tanggal = $request->tanggal;
+    $data->status = $request->status;
+
+    $data->save();
+
+    return redirect()->route('admin.transaksi_distribusi_depo')->with('success', 'Data berhasil ditambahkan');
+
+}
 
     public function edit($id)
     {
-        $client = new Client;
-        $url = "http://scmapi.satriatech.com/api/admin/transaksidepo/$id";
-        $response = $client->request('GET', $url);
-        $content = $response->getBody()->getContents();
-        $contentArray = json_decode($content, true);
-        $data = $contentArray['data'];
-
-        $clientb = new Client;
-        $urlb = "http://scmapi.satriatech.com/api/admin/petugas";
-        $responseb = $clientb->request('GET', $urlb);
-        $contentb = $responseb->getBody()->getContents();
-        $contentArrayb = json_decode($contentb, true);
-
-        $client = new Client();
-        $urlDepo = "http://scmapi.satriatech.com/api/admin/depo";
-        $responseDepo = $client->request('GET', $urlDepo);
-        $contentDepo = $responseDepo->getBody()->getContents();
-        $contentArrayDepo = json_decode($contentDepo, true);
-
-        $clientCls = new Client();
-        $urlCls = "http://scmapi.satriatech.com/api/admin/cluster";
-        $responseCls = $clientCls->request('GET', $urlCls);
-        $contentCls = $responseCls->getBody()->getContents();
-        $contentArrayCls = json_decode($contentCls, true);
-
-        if (!isset($contentArray['status']) || $contentArray['status'] !== true) {
-            $error = isset($contentArray['message']) ? $contentArray['message'] : "Unknown error occurred";
-            return redirect()->route('admin.transaksi.distribusi_depo')->withErrors($error);
-        } else {
-            $data = $contentArray['data'];
-            $petugas = $contentArrayb['data'];
-            $cluster = $contentArrayCls['data'];
-            $depo = $contentArrayDepo['data'];
-            return view('admin.transaksi.distribusi_depo.edit', compact('data', 'cluster', 'depo', 'petugas'));
-        }
+       
     }
 
     public function update(Request $request, $id)
-    {
-        $client = new Client();
-        $url = "http://scmapi.satriatech.com/api/admin/transaksidepo/$id";
-        $response = $client->request('GET', $url);
-        $content = $response->getBody()->getContents();
-        $contentArray = json_decode($content, true);
-        $data = $contentArray['data'];
-        $request->validate([
-            'id_petugas' => 'required|numeric',
-            'id_cluster' => 'required|numeric',
-            'id_depo' => 'required|numeric',
-            'tanggal' => 'required'
-        ], [
-            'id_petugas.required' => 'petugas harus dipilih',
-            'id_petugas.numeric' => 'petugas harus dipilih',
-            'id_cluster.required' => 'cluster harus dipilih',
-            'id_cluster.numeric' => 'cluster harus dipilih',
-            'id_depo.required' => 'depo harus dipilih',
-            'id_depo.numeric' => 'depo harus dipilih',
-            'tanggal.required' => 'tanggal harus diisi'
-        ]);
+{
+    // Validasi data menggunakan Validator
+    $validator = Validator::make($request->all(), [
+        'id_petugas' => 'required|int|exists:petugas,id',
+        'id_cluster' => 'required|int|exists:cluster,id',
+        'id_depo' => 'required|int|exists:depo,id',
+        'tanggal' => 'required|date',
+        'status' => 'required|string|max:255',
+    ]);
 
-        $dataToUpdate = [
-            'tanggal' => $request->tanggal,
-            'id_petugas' => $request->id_petugas,
-            'id_cluster' => $request->id_cluster,
-            'id_depo' => $request->id_depo,
-            'status' => 'true',
-        ];
-
-        $client->request('PUT', $url, [
-            'json' => $dataToUpdate,
-        ]);
-
-        return redirect()->route('admin.transaksi.distribusi_depo')->with('success', 'depo telah diubah');
+    // Jika validasi gagal
+    if ($validator->fails()) {
+        return redirect()->back()->withErrors($validator)->withInput();
     }
 
-    public function destroy($id)
-    {
-        $client = new Client();
-        $url = "http://scmapi.satriatech.com/api/admin/transaksidepo/$id";
-        $response = $client->request('DELETE', $url);
-        $content = $response->getBody()->getContents();
-        $contentArray = json_decode($content, true);
-        return redirect()->route('admin.transaksi.distribusi_depo')->with('success', 'depo telah dihapus');
-    }
-    // public function detail($id)
-    // {
-    //     $data = TransaksiDepoDetail::where('id_transaksi', $id)->get();
-    //     return view('admin.transaksi.distribusi_depo.detail.index', compact('data'));
-    // }
+    // Temukan data yang akan diupdate
+    $data = TransaksiDepo::findOrFail($id);
+    
+    // Update data
+    $data->id_petugas = $request->id_petugas;
+    $data->id_cluster = $request->id_cluster;
+    $data->id_depo = $request->id_depo;
+    $data->tanggal = $request->tanggal;
+    $data->status = $request->status;
+    $data->save();
 
-    public function import()
-    {
-        $cluster = Cluster::all();
-        $depo = Depo::all();
-        return view('admin.transaksi.distribusi_depo.import', compact('cluster', 'depo'));
-    }
+    // Redirect dengan pesan sukses
+    return redirect()->route('admin.transaksi_distribusi_depo')->with('success', 'Data berhasil diperbarui');
+}
 
-    public function import_excel(Request $request)
+public function destroy($id)
+{
+    // Temukan data yang akan dihapus
+    $data = TransaksiDepo::findOrFail($id);
+
+    // Hapus data
+    $data->delete();
+
+    // Redirect dengan pesan sukses
+    return redirect()->route('admin.transaksi_distribusi_depo')->with('success', 'Data berhasil dihapus');
+}
+    
+
+
+public function import_excel(Request $request)
+{
     {
         // Validate the request
         $this->validate($request, [
@@ -230,8 +161,8 @@ class TransaksiDepoController extends Controller
                 if ($barang) {
                     $transaksi = TransaksiDepo::firstOrCreate([
                         'id_petugas' => Auth::user()->id,
-                        'id_cluster' => $request->cluster_id,
-                        'id_depo' => $request->depo_id,
+                        'id_cluster' => $request->id_cluster,
+                        'id_depo' => $request->id_depo,
                         'tanggal' => date('Y-m-d'),
                         'status' => '',
                     ]);
@@ -243,7 +174,7 @@ class TransaksiDepoController extends Controller
                     ]);
                 } else {
                     // Log or handle the case where the item does not exist
-                    \Log::warning('Barang not found for item name: ' . $d['item_name']);
+                    Log::warning('Barang not found for item name: ' . $d['item_name']);
                 }
             }
         }
@@ -251,4 +182,5 @@ class TransaksiDepoController extends Controller
         // Redirect back with success message
         return redirect()->route('admin.transaksi.distribusi_depo')->with('success', 'Barang masuk telah ditambahkan');
     }
+}
 }
