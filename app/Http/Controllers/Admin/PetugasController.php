@@ -46,12 +46,14 @@ class PetugasController extends Controller
         );
 
         $role = $request['role'];
+        $jenis = 0;
+        $bagian = 0;
 
         if ($role == "admin") {
-            $jenis = 0;
-        } else if ($role == "cluster") {
+            $bagian = $request['bagian'];
+        } elseif ($role == "cluster") {
             $jenis = $request['cluster_id'];
-        } else {
+        } elseif ($role == "depo") {
             $jenis = $request['depo_id'];
         }
 
@@ -60,7 +62,7 @@ class PetugasController extends Controller
             'hak_akses' => $request->role,
             'password'  => Hash::make($request->password),
             'jenis' => $jenis,
-            'bagian' => $request->bagian,
+            'bagian' => $bagian,
         ]);
 
         return redirect()->route('admin.petugas')->with('success', 'User ' . $request->username . ' telah ditambahkan');
