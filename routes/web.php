@@ -134,6 +134,5 @@ Route::put('stok_barang_cluster/{id}', [App\Http\Controllers\Admin\StokclusterCo
 Route::delete('stok_barang_cluster/{id}', [App\Http\Controllers\Admin\StokclusterController::class, 'destroy'])->name('admin.stok_barang.cluster.delete')->middleware(['checkRole:admin']);
 
 Route::get('hargabarang', [App\Http\Controllers\Admin\HargaBarangController::class, 'index'])->name('admin.harga_barang')->middleware(['checkRole:admin']);
-Route::post('hargabarang', [App\Http\Controllers\Admin\HargaBarangController::class, 'store'])->name('admin.harga_barang.store')->middleware(['checkRole:admin']);
-Route::put('hargabarang/{id}', [App\Http\Controllers\Admin\HargaBarangController::class, 'update'])->name('admin.harga_barang.update')->middleware(['checkRole:admin']);
-Route::delete('hargabarang/{id}', [App\Http\Controllers\Admin\HargaBarangController::class, 'destroy'])->name('admin.harga_barang.delete')->middleware(['checkRole:admin']);
+Route::get('harga-barang/fetch', [App\Http\Controllers\Admin\HargaBarangController::class, 'fetchData'])->name('admin.harga_barang.fetch');
+Route::post('hargabarang/update', [App\Http\Controllers\Admin\HargaBarangController::class, 'update'])->name('admin.harga_barang.update')->middleware(['checkRole:admin']);
