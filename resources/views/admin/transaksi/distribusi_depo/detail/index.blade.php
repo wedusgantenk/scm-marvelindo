@@ -178,21 +178,19 @@ Distribusi ke Depo
                         <thead>
                             <tr>
                                 <th>Nomor</th>
-                                <th>Petugas</th>
                                 <th>Nama Barang</th>
                                 <th>Kode Unik</th>
                                 <th>Status</th>
-                                <th>Aksi</th>
+                            
                                 
                             </tr>
                         </thead>
                         <tbody>
                             
-                            @foreach($data as $d)
-                            
+                            @foreach($transaksiDistribusiDepo->details as $d)
+
                             <tr>
-                                <td>1</td>
-                                <td>N/A</td>
+                                <td>{{ $loop->iteration }}</td>
                                 <td>{{ $d->barang->nama }}</td>
                                 <td>{{ $d->kode_unik }}</td>
                                 <td>{{ $d->status }}</td>

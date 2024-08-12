@@ -19,9 +19,11 @@ class TransaksiDepoDetailController extends Controller
     public function index($id_transaksi)
     {
          // Ambil data transaksi depo berdasarkan ID yang dikirim
-        $data = TransaksiDepoDetail::with('transaksiDepo', 'barang', 'detail')
+        $data = TransaksiDepoDetail::with('barang', 'detail')
         ->where('id', $id_transaksi)
         ->firstOrFail();
+
+    
 
          // Debug hasil query
         Log::info('Data hasil query:', ['data' => $data]);

@@ -26,10 +26,10 @@ class TransaksiDepoDetail extends Model
     return $this->belongsTo(TransaksiDepo::class, 'id_transaksi');
 }
 
-    public function detail()
-    {
-        return $this->belongsTo(DetailBarang::class,'kode_unik', 'id');
-    }
+    // public function detail()
+    // {
+    //     return $this->belongsTo(DetailBarang::class,'kode_unik', 'id');
+    // }
 
    
 }

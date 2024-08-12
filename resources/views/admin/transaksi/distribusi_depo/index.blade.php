@@ -95,7 +95,7 @@ Distribusi ke Depo
                     </div>
 
                     <!-- Modal Edit Data -->
-                    @foreach($data as $d)
+                    @foreach($transaksiDistribusiDepos as $d)
                     <div class="modal fade" id="editDataModal{{ $d->id }}" tabindex="-1" aria-labelledby="editDataModalLabel{{ $d->id }}" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
@@ -208,7 +208,7 @@ Distribusi ke Depo
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($data as $d)
+                            @forelse ($transaksiDistribusiDepos as $d)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $d->petugas->username }}</td>
@@ -218,7 +218,7 @@ Distribusi ke Depo
                                 <td>{{ $d->status }}</td>
                                 <td>
                                      <!-- Tombol Lihat -->
-                                    <a class="btn btn-sm btn-info" href="{{ route('admin.transaksi_distribusi_depo.detail', ['id_transaksi' => $d->id]) }}">Lihat</a>
+                                    <a class="btn btn-sm btn-info" href="{{ route('admin.transaksi_distribusi_depo.show', ['id' => $d->id]) }}">Lihat</a>
 
                                     <a class="btn btn-sm btn-primary" href="#editDataModal{{ $d->id }}" data-bs-toggle="modal">Edit</a>
                                     <!-- Tombol Hapus -->

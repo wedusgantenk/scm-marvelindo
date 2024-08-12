@@ -29,12 +29,12 @@ class TransaksiDepo extends Model
 
     public function depo()
     {
-        return $this->belongsTo(Depo::class, 'id_depo', 'id');
+        return $this->belongsTo(Depo::class, 'id_depo');
     }
 
     public function details()
     {
-        return $this->hasMany(TransaksiDepoDetail::class, 'id_transaksi', 'id');
+        return $this->hasMany(TransaksiDepoDetail::class, 'id_transaksi');
     }
 
     

@@ -28,12 +28,19 @@ class TransaksiDepoController extends Controller
 
     public function index()
     {
-        $data = TransaksiDepo::with(['cluster', 'depo', 'petugas'])->get()->map(function ($item) {
+        $transaksiDistribusiDepos  = TransaksiDepo::with(['cluster', 'depo', 'petugas'])->get()->map(function ($item) {
             // Mengubah format tanggal ke format yang diperlukan untuk input date HTML
             $item->formatted_tanggal = Carbon::parse($item->tanggal)->format('Y-m-d');
             return $item;
         });
-        return view('admin.transaksi.distribusi_depo.index', compact('data'));
+        return view('admin.transaksi.distribusi_depo.index', compact('transaksiDistribusiDepos'));
+    }
+
+
+    public function show($id)
+    {
+        $transaksiDistribusiDepo = TransaksiDepo::with(['details.barang', 'petugas'])->findOrFail($id);
+        return view('admin.transaksi.distribusi_depo.detail.index', compact('transaksiDistribusiDepo'));
     }
 
     public function create()
