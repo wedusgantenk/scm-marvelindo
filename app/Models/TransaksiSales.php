@@ -17,13 +17,15 @@ class TransaksiSales extends Model
         'status'
     ];
 
-    public function details()
-    {
-        return $this->hasMany(TransaksiSalesDetail::class, 'id_transaksi');
-    }
+    
     public function petugas()
     {
         return $this->belongsTo(Petugas::class, 'id_petugas');
+    }
+
+    public function sales()
+    {
+        return $this->belongsTo(Sales::class, 'id_sales');
     }
 
     public function depo()
@@ -31,8 +33,8 @@ class TransaksiSales extends Model
         return $this->belongsTo(Depo::class, 'id_depo');
     }
 
-    public function sales()
+    public function details()
     {
-        return $this->belongsTo(Sales::class, 'id_sales');
+        return $this->hasMany(TransaksiSalesDetail::class, 'id_transaksi');
     }
 }

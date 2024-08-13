@@ -13,8 +13,7 @@ Distribusi ke Depo
                     <button class="btn btn-primary my-3" data-bs-toggle="modal" data-bs-target="#tambahDataModal">Tambah Data</button>
                     <button class="btn btn-info my-3" data-bs-toggle="modal" data-bs-target="#importDataModal">Import Data</button>
 
-                    <form action="{{ route('admin.transaksi_distribusi_depo.store') }}" method="POST">
-                        @csrf
+
                     <!-- Modal Import Data -->
                 <div class="modal fade" id="importDataModal" tabindex="-1" aria-labelledby="importDataModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
@@ -27,6 +26,36 @@ Distribusi ke Depo
                                 <form action="{{ route('admin.transaksi_distribusi_depo.import_excel') }}" method="POST" enctype="multipart/form-data">
                                     @csrf
                                     <div class="mb-3">
+                                        <label for="id_cluster" class="form-label">Pilih Cluster</label>
+                                        <select class="form-select" id="id_cluster" name="id_cluster" required>
+                                            @foreach(App\Models\Cluster::all() as $cluster)
+                                                <option value="{{ $cluster->id }}">{{ $cluster->nama }}</option>
+                                            @endforeach
+                                        </select>
+
+                                        <label for="id_depo" class="form-label">Pilih Depo</label>
+                                        <select class="form-select" id="id_depo" name="id_depo" required>
+                                            @foreach(App\Models\Depo::all() as $depo)
+                                                <option value="{{ $depo->id }}">{{ $depo->nama }}</option>
+                                            @endforeach
+                                        </select>
+
+                                        <select class="form-select" id="id_petugas" name="id_petugas" required hidden>
+                                            @php
+                                                // Ambil informasi petugas yang sedang login
+                                                $petugas = Auth::user();
+                                            @endphp
+                                            <option value="{{ $petugas->id }}" selected>
+                                                {{ $petugas->id }} - {{ $petugas->username }}
+                                            </option>
+                                        </select>
+
+                                        <!-- Input untuk tanggal dengan nilai default tanggal saat ini -->
+                                        <input type="date" id="tanggal" name="tanggal" value="{{ \Carbon\Carbon::now()->format('Y-m-d') }}" hidden>
+
+                                        <!-- Input untuk status dengan nilai string kosong -->
+                                        <input type="hidden" id="status" name="status" value="-" hidden>
+
                                         <label for="file" class="form-label">Choose Excel File</label>
                                         <input type="file" class="form-control" id="file" name="file" required>
                                     </div>
@@ -47,6 +76,8 @@ Distribusi ke Depo
                                 </div>
                                 <div class="modal-body">
 
+                                    <form action="{{ route('admin.transaksi_distribusi_depo.store') }}" method="POST">
+                                        @csrf
                                         <div class="mb-3">
                                             <label for="id_petugas" class="form-label">Nama Petugas</label>
                                             <select class="form-select" id="id_petugas" name="id_petugas" required>
@@ -95,7 +126,7 @@ Distribusi ke Depo
                     </div>
 
                     <!-- Modal Edit Data -->
-                    @foreach($data as $d)
+                    @foreach($transaksiDistribusiDepos as $d)
                     <div class="modal fade" id="editDataModal{{ $d->id }}" tabindex="-1" aria-labelledby="editDataModalLabel{{ $d->id }}" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
@@ -208,7 +239,7 @@ Distribusi ke Depo
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($data as $d)
+                            @forelse ($transaksiDistribusiDepos as $d)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $d->petugas->username }}</td>
@@ -218,7 +249,7 @@ Distribusi ke Depo
                                 <td>{{ $d->status }}</td>
                                 <td>
                                      <!-- Tombol Lihat -->
-                                    <a class="btn btn-sm btn-info" href="{{ route('admin.transaksi_distribusi_depo.detail', ['id_transaksi' => $d->id]) }}">Lihat</a>
+                                    <a class="btn btn-sm btn-info" href="{{ route('admin.transaksi_distribusi_depo.show', ['id' => $d->id]) }}">Lihat</a>
 
                                     <a class="btn btn-sm btn-primary" href="#editDataModal{{ $d->id }}" data-bs-toggle="modal">Edit</a>
                                     <!-- Tombol Hapus -->
