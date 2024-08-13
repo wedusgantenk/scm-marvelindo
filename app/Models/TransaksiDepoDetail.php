@@ -11,6 +11,7 @@ class TransaksiDepoDetail extends Model
     protected $table = "transaksi_distribusi_depo_detail";
     protected $fillable = [
         'id_transaksi',
+        'transaksi_code',
         'id_barang',
         'kode_unik',
         'status'
@@ -18,16 +19,18 @@ class TransaksiDepoDetail extends Model
 
     public function barang()
     {
-        return $this->belongsTo(Barang::class,'id_barang');
+        return $this->belongsTo(Barang::class,'id_barang', 'id');
     }
 
-    public function transaksi()
-    {
-        return $this->belongsTo(TransaksiDepo::class,'id_transaksi', 'id');
-    }
+    public function transaksiDepo()
+{
+    return $this->belongsTo(TransaksiDepo::class, 'id_transaksi');
+}
 
-    public function detail()
-    {
-        return $this->belongsTo(DetailBarang::class,'kode_unik', 'id');
-    }
+    // public function detail()
+    // {
+    //     return $this->belongsTo(DetailBarang::class,'kode_unik', 'id');
+    // }
+
+   
 }
