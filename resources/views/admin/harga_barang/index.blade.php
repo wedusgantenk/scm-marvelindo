@@ -39,7 +39,7 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-    $(document).ready(function() {
+   $(document).ready(function() {
     $.ajax({
         url: "{{ route('admin.harga_barang.fetch') }}",
         method: 'GET',
@@ -157,7 +157,8 @@
                                                 });
                                                 // Update tampilan sel dengan nilai yang diformat
                                                 $el.html(formatMoney(newValue));
-                                                $('#tbl_room').bootstrapTable('load', data.data); // Reload data to prevent duplication
+                                                // Refresh data tabel setelah update
+                                                $('#tbl_room').bootstrapTable('refresh');
                                             } else {
                                                 Swal.fire({
                                                     position: 'center',
@@ -233,6 +234,7 @@
         }
     });
 });
+
 
 </script>
 
