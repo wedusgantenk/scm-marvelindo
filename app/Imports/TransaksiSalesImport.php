@@ -10,14 +10,13 @@ use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
-class TransaksiDepoImport implements ToCollection, WithHeadingRow
+class TransaksiSalesImport implements ToCollection, WithHeadingRow
 {
     private $data;
 
     public function collection(Collection $rows)
     {
         $this->data;
-        
     }
 
     public function getData()

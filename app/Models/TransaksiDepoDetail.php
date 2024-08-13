@@ -11,6 +11,7 @@ class TransaksiDepoDetail extends Model
     protected $table = "transaksi_distribusi_depo_detail";
     protected $fillable = [
         'id_transaksi',
+        'transaksi_code',
         'id_barang',
         'kode_unik',
         'status'
