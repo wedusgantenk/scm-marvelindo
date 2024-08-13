@@ -12,7 +12,8 @@ class HargaBarang extends Model
     protected $fillable = [
         'id_barang',        
         'id_jenis_outlet',
-        'harga'
+        'harga',
+        'tanggal'
     ];
 
     public function barang()

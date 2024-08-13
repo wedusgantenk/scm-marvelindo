@@ -8,6 +8,7 @@ use App\Models\HargaBarang;
 use App\Models\JenisOutlet;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class HargaBarangController extends Controller
 {
@@ -46,7 +47,7 @@ class HargaBarangController extends Controller
             ];
         }
 
-        $data = $barang->map(function($item) use ($jenis_outlets) {
+        $data = $barang->map(function ($item) use ($jenis_outlets) {
             $row = [
                 'nama_barang' => $item->nama,
             ];
@@ -81,7 +82,10 @@ class HargaBarangController extends Controller
 
             $barang->hargaBarang()->updateOrCreate(
                 ['id_jenis_outlet' => $id_jenis_outlet],
-                ['harga' => $harga]
+                [
+                    'harga' => $harga,
+                    'tanggal' => Carbon::now()
+                ],
             );
         }
 
