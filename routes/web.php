@@ -106,14 +106,6 @@ Route::post('sales', [App\Http\Controllers\Admin\SalesController::class, 'store'
 Route::patch('sales/{id}', [App\Http\Controllers\Admin\SalesController::class, 'update'])->name('admin.sales.update')->middleware(['checkRole:admin']);
 Route::delete('sales/{id}', [App\Http\Controllers\Admin\SalesController::class, 'destroy'])->name('admin.sales.delete')->middleware(['checkRole:admin']);
 
-Route::get('barang_masuk', [App\Http\Controllers\Admin\BarangMasukController::class, 'index'])->name('admin.barang_masuk')->middleware(['checkRole:admin']);
-Route::post('barang_masuk', [App\Http\Controllers\Admin\BarangMasukController::class, 'store'])->name('admin.barang_masuk.store')->middleware(['checkRole:admin']);
-Route::put('barang_masuk/{id}', [App\Http\Controllers\Admin\BarangMasukController::class, 'update'])->name('admin.barang_masuk.update')->middleware(['checkRole:admin']);
-Route::delete('barang_masuk/{id}', [App\Http\Controllers\Admin\BarangMasukController::class, 'destroy'])->name('admin.barang_masuk.delete')->middleware(['checkRole:admin']);
-Route::get('barang_masuk/import', [App\Http\Controllers\Admin\BarangMasukController::class, 'import'])->name('admin.barang_masuk.import')->middleware(['checkRole:admin']);
-Route::post('barang_masuk/import', [App\Http\Controllers\Admin\BarangMasukController::class, 'import_excel'])->name('admin.barang_masuk.import_excel')->middleware(['checkRole:admin']);
-Route::get('barang_masuk/export', [App\Http\Controllers\Admin\BarangMasukController::class, 'export'])->name('admin.barang_masuk.export')->middleware(['checkRole:admin']);
-
 Route::get('detailbarang', [App\Http\Controllers\Admin\DetailBarangController::class, 'index'])->name('admin.detail_barang')->middleware(['checkRole:admin']);
 Route::post('detailbarang', [App\Http\Controllers\Admin\DetailBarangController::class, 'store'])->name('admin.detail_barang.store')->middleware(['checkRole:admin']);
 Route::put('detailbarang/{id}', [App\Http\Controllers\Admin\DetailBarangController::class, 'update'])->name('admin.detail_barang.update')->middleware(['checkRole:admin']);
@@ -137,3 +129,13 @@ Route::delete('stok_barang_cluster/{id}', [App\Http\Controllers\Admin\Stokcluste
 Route::get('hargabarang', [App\Http\Controllers\Admin\HargaBarangController::class, 'index'])->name('admin.harga_barang')->middleware(['checkRole:admin']);
 Route::get('harga-barang/fetch', [App\Http\Controllers\Admin\HargaBarangController::class, 'fetchData'])->name('admin.harga_barang.fetch');
 Route::post('hargabarang/update', [App\Http\Controllers\Admin\HargaBarangController::class, 'update'])->name('admin.harga_barang.update')->middleware(['checkRole:admin']);
+
+Route::get('barang_masuk', [App\Http\Controllers\Admin\BarangMasukController::class, 'index'])->name('admin.barang_masuk')->middleware(['checkRole:admin']);
+Route::post('barang_masuk/import', [App\Http\Controllers\Admin\BarangMasukController::class, 'import_excel'])->name('admin.barang_masuk.import_excel')->middleware(['checkRole:admin']);
+Route::delete('barang_masuk/delete', [App\Http\Controllers\Admin\BarangMasukController::class, 'destroy'])->name('admin.barang_masuk.delete')->middleware(['checkRole:admin']);
+
+// Route::post('barang_masuk', [App\Http\Controllers\Admin\BarangMasukController::class, 'store'])->name('admin.barang_masuk.store')->middleware(['checkRole:admin']);
+// Route::put('barang_masuk/{id}', [App\Http\Controllers\Admin\BarangMasukController::class, 'update'])->name('admin.barang_masuk.update')->middleware(['checkRole:admin']);
+// Route::delete('barang_masuk/{id}', [App\Http\Controllers\Admin\BarangMasukController::class, 'destroy'])->name('admin.barang_masuk.delete')->middleware(['checkRole:admin']);
+// Route::post('barang_masuk/import', [App\Http\Controllers\Admin\BarangMasukController::class, 'import_excel'])->name('admin.barang_masuk.import_excel')->middleware(['checkRole:admin']);
+// Route::get('barang_masuk/export', [App\Http\Controllers\Admin\BarangMasukController::class, 'export'])->name('admin.barang_masuk.export')->middleware(['checkRole:admin']);

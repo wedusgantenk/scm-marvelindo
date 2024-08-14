@@ -13,24 +13,7 @@ Barang
             <div class="relative flex flex-col min-w-0 p-6 mb-6 break-words bg-white border-0 border-solid shadow-soft-xl rounded-2xl bg-clip-border">
                 <div class="font-semibold border-b-0 border-b-solid rounded-t-2xl border-b-transparent">
                     <h6>Barang</h6>
-                </div>
-                <div class="flex object-center py-2 space-x-4 col-md-4">
-                    <div class="flex">
-                        <button class="flex px-2 py-1 mt-2 text-xs font-semibold text-white rounded-lg bg-gradient-to-tr from-red-500 to-red-900 hover:scale-102 drop-shadow-xl">
-                            <a href="{{ route('admin.barang.create')}}">Tambah</a>
-                        </button>
-                    </div>
-                    <div class="flex">
-                        <button class="flex px-2 py-1 mt-2 text-xs font-semibold text-white rounded-lg bg-gradient-to-tr from-red-500 to-red-900 hover:scale-102 drop-shadow-xl">
-                            <a href="{{ route('admin.barang.import')}}">Upload</a>
-                        </button>
-                    </div>
-                    <div class="flex">
-                        <button class="flex px-2 py-1 mt-2 text-xs font-semibold text-white rounded-lg bg-gradient-to-tr from-red-500 to-red-900 hover:scale-102 drop-shadow-xl">
-                            <a href="{{ route('admin.barang.export')}}">Ekspor</a>
-                        </button>
-                    </div>
-                </div>
+                </div>                
                 <div class="flex-auto pb-2">
                     <div class="overflow-x-auto">
                         <table class="items-center w-full px-6 py-3 mb-0 align-top border-transparent border-gray-200 table-auto text-slate-600" id="datatables">
@@ -65,14 +48,14 @@ Barang
                                     </td>
 
                                     <td class="flex text-sm font-normal leading-normal border-t">
-                                        <a href="{{ route('admin.barang.edit', $d['id']) }}" class="flex btn btn-success btn-xs"><i class="m-2 fas fa-edit fa-lg hover:scale-102"></i></a>
+                                        {{-- <a href="{{ route('admin.barang.edit', $d['id']) }}" class="flex btn btn-success btn-xs"><i class="m-2 fas fa-edit fa-lg hover:scale-102"></i></a>
                                         <a class="flex btn btn-danger btn-xs">
                                             <form action="{{ route('admin.barang.delete', $d['id']) }}" method="post" onsubmit="return confirm('Apakah yakin ingin menghapus barang {{ $d['nama'] }} ?')">
                                                 @csrf
                                                 @method('delete')
                                                 <button type="submit" name="submit"><i class="flex m-2 fas fa-trash-alt fa-lg hover:scale-102"></i></button>
                                             </form>
-                                        </a>
+                                        </a> --}}
                                     </td>
                                 </tr>
                                 @empty
