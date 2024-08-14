@@ -191,7 +191,7 @@ return [
     */
 
     'aliases' => Facade::defaultAliases()->merge([
-        // ...
+        'AppHelper' => App\Helpers\AppHelper::class
     ])->toArray(),
 
 ];
