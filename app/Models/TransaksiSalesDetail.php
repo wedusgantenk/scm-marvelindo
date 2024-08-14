@@ -14,7 +14,6 @@ class TransaksiSalesDetail extends Model
         'id_barang',
         'kode_unik',
         'status',
-        'transaksi_code'
     ];
 
     public function barang()

@@ -252,8 +252,7 @@ public function destroy($id)
 
         $now = Carbon::now();
 
-        // HIGHLIGHTED: Format kode dengan format DDMMYYMinutesMinutesHH
-        $transaksiCode = $now->format('dmyHis');
+
 
         // Save each imported row to the database
         foreach ($importedData as $collection) {
@@ -268,7 +267,6 @@ public function destroy($id)
                 // HIGHLIGHTED: Buat TransaksiSalesDetail terkait dengan satu transaksi
                 TransaksiSalesDetail::create([
                     'id_transaksi' => $transaksi->id,  // HIGHLIGHTED: Menggunakan id dari transaksi yang dibuat di luar loop
-                    'transaksi_code' => $transaksiCode, // HIGHLIGHTED: Menggunakan kode transaksi yang sama untuk semua detail
                     'id_barang' => $barang->id,
                     'kode_unik' => $row['iccid'],
                     'status' => ''
