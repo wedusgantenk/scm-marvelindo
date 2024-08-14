@@ -337,9 +337,7 @@ public function import_excel(Request $request)
 
         $now = Carbon::now();
 
-        // HIGHLIGHTED: Format kode dengan format DDMMYYMinutesMinutesHH
-        $transaksiCode = $now->format('dmyHis');
-
+       
         // Save each imported row to the database
         foreach ($importedData as $collection) {
             $row = $collection->toArray();
@@ -353,7 +351,6 @@ public function import_excel(Request $request)
                 // HIGHLIGHTED: Buat TransaksiSalesDetail terkait dengan satu transaksi
                 TransaksiDepoDetail::create([
                 'id_transaksi' => $transaksi->id,
-                'transaksi_code' => $transaksiCode,
                 'id_barang' => $barang->id,
                 'kode_unik' => $row['iccid'],
                 'status' => ''
