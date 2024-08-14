@@ -12,6 +12,7 @@ class TransaksiSales extends Model
     protected $fillable = [
         'id_petugas',
         'id_depo',
+        'id_depo',
         'id_sales',
         'tanggal',
         'status'

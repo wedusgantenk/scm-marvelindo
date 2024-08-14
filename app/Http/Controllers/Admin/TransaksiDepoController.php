@@ -196,6 +196,102 @@ public function destroy($id)
 // }
 
 //sadwadawdwad
+// public function import_excelfalse(Request $request)
+// {
+//     // Validate the incoming request
+//     $this->validate($request, [
+//         'file' => 'required|file|mimes:csv,xls,xlsx', // Contoh validasi tambahan untuk ID Sales
+//         'id_depo' => 'required|exists:depo,id', // Contoh validasi tambahan untuk ID Depo
+//         'id_petugas' => 'required|exists:petugas,id',
+//         'id_cluster' => 'required|exists:cluster,id'
+
+//     ]);
+
+//     // Retrieve the file from the request
+//     $file = $request->file('file');
+
+//     // Generate a unique file name
+//     $nama_file = rand() . "_" . $file->getClientOriginalName();
+
+//     // Move the file to a directory within the storage folder
+//     $destinationPath = storage_path('app/public/excel_transaksi_depo');
+//     $file->move($destinationPath, $nama_file);
+
+//     // Start a database transaction
+//     DB::beginTransaction();
+
+
+//     try {
+//         // Import data using Laravel Excel
+//         $import = new TransaksiDepoImport;
+
+//         Excel::import($import, $destinationPath . '/' . $nama_file);
+
+//         // Get the imported data
+//         $importedData = $import->getData();
+
+
+
+//         // Save each imported row to the database
+//         foreach ($importedData as $collection) {
+//             $row = $collection->toArray();
+
+//             Log::info('Imported Row: ' . print_r($row, true));
+//             Log::info('Total rows imported: ' . count($importedData));
+//             ############ mencari barang merujuk pada item_name
+//             // Mencari barang berdasarkan nama
+//             $barang = Barang::where('nama', $row['item_name'])->first();
+            
+//             $userId = Auth::id();
+
+//             $transaksi = TransaksiDepo::create([
+//                 'id_petugas' => $userId,
+//                 'id_cluster' => $request->id_cluster,
+//                 'id_depo' => $request->id_depo,
+//                 'tanggal' => Carbon::now(),
+//                 'status' => ''
+      
+//             ]);
+
+            
+//             $now = Carbon::now();
+//              // Format kode dengan format DDMMYYMinutesMinutesHH
+//             $transaksiCode = $now->format('d') . $now->format('m') . $now->format('y') . $now->format('i') . $now->format('i') . $now->format('H');
+//             TransaksiDepoDetail::firstOrCreate([
+//                 'id_transaksi' => $transaksi->id,
+//                 'transaksi_code' => $transaksiCode,
+//                 'id_barang' => $barang->id,
+//                 'kode_unik' => $row['iccid'],
+//                 'status' => ''
+//             ]);
+
+//         }
+
+//         // Commit the transaction
+//         DB::commit();
+
+//         // Delete the file after processing
+//         unlink($destinationPath . '/' . $nama_file);
+
+//         // Return a success message
+//         return redirect()->route('admin.transaksi_distribusi_depo')->with('success', 'File has been successfully imported and data saved to the database.');
+//     } catch (\Exception $e) {
+//         // Rollback the transaction
+//         DB::rollBack();
+
+//         // Delete the file in case of an error
+//         if (file_exists($destinationPath . '/' . $nama_file)) {
+//             unlink($destinationPath . '/' . $nama_file);
+//         }
+
+//         // Log the error
+//         Log::error('Error importing file: ' . $e->getMessage());
+
+//         // Return an error message
+//         return redirect()->back()->with('error', 'There was an error processing your file. ' . $e->getMessage());
+//     }
+// }
+
 public function import_excel(Request $request)
 {
     // Validate the incoming request
@@ -204,7 +300,6 @@ public function import_excel(Request $request)
         'id_depo' => 'required|exists:depo,id', // Contoh validasi tambahan untuk ID Depo
         'id_petugas' => 'required|exists:petugas,id',
         'id_cluster' => 'required|exists:cluster,id'
-
     ]);
 
     // Retrieve the file from the request
@@ -220,7 +315,6 @@ public function import_excel(Request $request)
     // Start a database transaction
     DB::beginTransaction();
 
-
     try {
         // Import data using Laravel Excel
         $import = new TransaksiDepoImport;
@@ -229,41 +323,45 @@ public function import_excel(Request $request)
 
         // Get the imported data
         $importedData = $import->getData();
+        
+        // HIGHLIGHTED: Buat transaksi sekali di luar loop
+        $userId = Auth::id();
+        $transaksi = TransaksiDepo::create([
+            'id_petugas' => $userId,
+            'id_cluster' => $request->id_cluster,
+            'id_depo' => $request->id_depo,
+            'tanggal' => Carbon::now(),
+            'status' => ''
+  
+        ]);
 
+        $now = Carbon::now();
 
+        // HIGHLIGHTED: Format kode dengan format DDMMYYMinutesMinutesHH
+        $transaksiCode = $now->format('dmyHis');
 
         // Save each imported row to the database
         foreach ($importedData as $collection) {
             $row = $collection->toArray();
 
+            Log::info('Imported Row: ' . print_r($row, true));
 
-            ############ mencari barang merujuk pada item_name
             // Mencari barang berdasarkan nama
-            $barang = Barang::where('nama', $row['ITEM NAME'])->first();
-            
-            $userId = Auth::id();
+            $barang = Barang::where('nama', $row['item_name'])->first();
 
-            TransaksiDepo::create([
-                'id_petugas' => $userId,
-                'id_cluster' => $request->id_cluster,
-                'id_depo' => $request->id_depo,
-                'tanggal' => Carbon::now(),
-                'status' => ''
-      
-            ]);
-
-            
-            $now = Carbon::now();
-             // Format kode dengan format DDMMYYMinutesMinutesHH
-            $transaksiCode = $now->format('d') . $now->format('m') . $now->format('y') . $now->format('i') . $now->format('i') . $now->format('H');
-            TransaksiDepoDetail::firstOrCreate([
-                'id_transaksi' => $row['id_transaksi'],
+            if ($barang) {
+                // HIGHLIGHTED: Buat TransaksiSalesDetail terkait dengan satu transaksi
+                TransaksiDepoDetail::create([
+                'id_transaksi' => $transaksi->id,
                 'transaksi_code' => $transaksiCode,
                 'id_barang' => $barang->id,
-                'kode_unik' => $row['ICCID'],
+                'kode_unik' => $row['iccid'],
                 'status' => ''
-            ]);
-
+                ]);
+                
+            } else {
+                Log::warning('Barang not found for item name: ' . $row['item_name']);
+            }
         }
 
         // Commit the transaction
@@ -290,6 +388,5 @@ public function import_excel(Request $request)
         return redirect()->back()->with('error', 'There was an error processing your file. ' . $e->getMessage());
     }
 }
-
 
 }

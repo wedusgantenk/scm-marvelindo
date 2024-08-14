@@ -16,7 +16,7 @@ class TransaksiSalesImport implements ToCollection, WithHeadingRow
 
     public function collection(Collection $rows)
     {
-        $this->data;
+        $this->data = $rows;
     }
 
     public function getData()
