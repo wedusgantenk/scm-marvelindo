@@ -55,42 +55,36 @@
                         <div id="editAlert" class="alert" style="display: none;" role="alert"></div>
 
                         <!-- Table with row editing -->
-                        <table class="table datatable" id="barangMasukTable">
-                            <thead>
-                                <tr>
-                                    <th>No</th>
-                                    <th>Tanggal</th>
-                                    <th>Kode Cluster</th>
-                                    <th>Nama Barang</th>
-                                    <th>Nomor DO</th>
-                                    <th>Nomor PO</th>
-                                    <th>Petugas</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($data as $d)
-                                    <tr data-id="{{ $d['id'] }}">
-                                        <td> {{ $loop->iteration }} </td>
-                                        <td> {{ AppHelper::instance()->convertDate($d['tanggal']) }} </td>
-                                        <td> {{ $d->kode_cluster ?? 'N/A' }} </td>
-                                        <td> {{ $d->barang->nama }} </td>
-                                        <td> {{ $d->no_do }} </td>
-                                        <td> {{ $d->no_po }} </td>
-                                        <td> {{ $d->petugas->username }} </td>
-                                        <td>
-                                            <button class="btn btn-sm btn-primary">Detail</button>
-                                            <button class="btn btn-sm btn-danger btn-delete"
-                                                data-id="{{ $d['id'] }}">Hapus</button>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="8" class="text-center">Tidak ada data</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                        <table class="table datatable table-striped" id="datatables">
+                        <thead>
+                            <tr>
+                                <th>Nomor</th>
+                                <th>Tanggal</th>
+                                <th>Kode Cluster</th>
+                                <th>Nama Barang</th>
+                                <th>Nomor DO</th>
+                                <th>Nomor PO</th>
+                                <th>Petugas</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($data as $d)
+                            <tr>
+                                <td class="text-center">{{ $loop->iteration }}</td>
+                                <td>{{ \Carbon\Carbon::parse($d['tanggal'])->locale('id')->isoFormat('D MMMM YYYY') }}</td>
+                                <td class="text-center">{{ $d->kode_cluster ?? 'N/A' }}</td>
+                                <td>{{ $d->barang->nama }}</td>
+                                <td>{{ $d->no_do }}</td>
+                                <td>{{ $d->no_po }}</td>
+                                <td>{{ $d->petugas->username }}</td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="7" class="text-center">Tidak ada data</td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                         <!-- End Table with row editing -->
                     </div>
                 </div>
