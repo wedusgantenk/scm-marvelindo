@@ -26,4 +26,15 @@ class DashboardController extends Controller
         $stokdepo = StokBarang_Depo::sum('stok');
         return view('admin.index', compact('totalbarang', 'totalpetugas', 'totalsales', 'stokcluster', 'stokdepo'));
     }
+
+    public function search(Request $request)
+    {
+        $query = $request->input('query');
+
+        $barang = Barang::where('nama', 'LIKE', "%{$query}%")->get();
+        $petugas = Petugas::where('nama', 'LIKE', "%{$query}%")->get();
+        $sales = Sales::where('nama', 'LIKE', "%{$query}%")->get();
+
+        return view('admin.search_results', compact('barang', 'petugas', 'sales', 'query'));
+    }
 }

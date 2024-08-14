@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\ClusterController;
+use App\Http\Controllers\Admin\DashboardController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,6 +19,7 @@ use Illuminate\Support\Facades\Auth;
 Auth::routes();
 
 Route::get('/', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard')->middleware(['auth']);
+route::get('search', [DashboardController::class,'search'])->name('search');
 Route::get('logout', [App\Http\Controllers\Admin\PetugasController::class, 'logout'])->name('logout');
 Route::get('profil', [App\Http\Controllers\Admin\ProfilController::class, 'index'])->name('admin.profil')->middleware(['checkRole:admin']);
 
