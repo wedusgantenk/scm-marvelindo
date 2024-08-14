@@ -94,7 +94,7 @@ Detail Barang
                             @foreach($data as $index => $detail)
                             <tr data-id="{{ $detail->id }}">
                                 <td>{{ $index + 1 }}</td>
-                                <td class="editable" data-field="barang_id" data-barang-id="{{ $detail->barang->id }}">{{ $detail->barang->nama }}</td>
+                                <td class="editable" data-field="id_barang" data-barang-id="{{ $detail->id }}">{{ $detail->barang->nama ?? 'Tidak Ada'}}</td>
                                 <td>{{ $detail->barang_masuk->no_po ?? 'N/A' }}</td>
                                 <td class="editable" data-field="kode_unik">{{ $detail->kode_unik }}</td>
                                 <td class="editable" data-field="status" data-status="{{ $detail->status }}">

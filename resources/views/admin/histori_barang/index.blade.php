@@ -11,6 +11,22 @@ Histori Barang
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Histori Barang</h5>
+
+                    <!-- Alert untuk notifikasi -->
+                    @if(session('success'))
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            {{ session('success') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
+
+                    @if(session('error'))
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            {{ session('error') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
+
                     <!-- Tombol Tambah Data -->
                     <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#tambahHistoriBarangModal">Tambah Histori Barang</button>
 
@@ -26,8 +42,8 @@ Histori Barang
                                     <form id="historiBarangForm">
                                         @csrf
                                         <div class="mb-3">
-                                            <label for="detail_barang_id" class="form-label">ICCID</label>
-                                            <select class="form-select" id="detail_barang_id" name="detail_barang_id" required>
+                                            <label for="id_detail_barang" class="form-label">ICCID</label>
+                                            <select class="form-select" id="id_detail_barang" name="id_detail_barang" required>
                                                 <option value="">--Pilih--</option>
                                                 @foreach ($detail_barang as $db)
                                                 <option value="{{ $db->id }}">{{ $db->kode_unik }}</option>
@@ -36,27 +52,27 @@ Histori Barang
                                         </div>
                                         <div class="mb-3">
                                             <label for="type" class="form-label">Tipe</label>
-                                            <input type="text" class="form-control" id="type" name="type" required>
+                                            <select class="form-select" id="type" name="type" required>
+                                                <option value="">Pilih Tipe</option>
+                                                <option value="depo">Depo</option>
+                                                <option value="cluster">Cluster</option>
+                                                <option value="sales">Sales</option>
+                                                <option value="outlet">Outlet</option>
+                                            </select>
                                         </div>
                                         <div class="mb-3">
                                             <label for="lokasi_asal_id" class="form-label">Asal</label>
-                                            <select class="form-select" id="lokasi_asal_id" name="lokasi_asal_id" required>
+                                            <select class="form-select" id="lokasi_asal_id" name="id_lokasi_asal" required>
                                                 <option value="">--Pilih--</option>
                                                 @foreach ($cluster as $c)
                                                 <option value="{{ $c->id }}">{{ $c->nama }}</option>
-                                                @endforeach
-                                                @foreach ($depo as $d)
-                                                <option value="{{ $d->id }}">{{ $d->nama }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
                                         <div class="mb-3">
-                                            <label for="lokasi_tujuan_id" class="form-label">Tujuan</label>
-                                            <select class="form-select" id="lokasi_tujuan_id" name="lokasi_tujuan_id" required>
+                                            <label for="id_lokasi_tujuan" class="form-label">Tujuan</label>
+                                            <select class="form-select" id="id_lokasi_tujuan" name="id_lokasi_tujuan" required>
                                                 <option value="">--Pilih--</option>
-                                                @foreach ($cluster as $c)
-                                                <option value="{{ $c->id }}">{{ $c->nama }}</option>
-                                                @endforeach
                                                 @foreach ($depo as $d)
                                                 <option value="{{ $d->id }}">{{ $d->nama }}</option>
                                                 @endforeach
@@ -115,15 +131,12 @@ Histori Barang
                             @foreach($data as $index => $histori)
                             <tr data-id="{{ $histori['id'] }}">
                                 <td>{{ $index + 1 }}</td>
-                                <td class="editable" data-field="detail_barang_id" data-detail-barang-id="{{ $histori['detail_barang']['id'] ?? '' }}">{{ $histori['detail_barang']['kode_unik'] ?? 'TIDAK DITEMUKAN DATA' }}</td>
+                                <td class="editable" data-field="id_detail_barang" data-detail-barang-id="{{ $histori['detail_barang']['id'] ?? '' }}">{{ $histori['detail_barang']['kode_unik'] ?? 'TIDAK DITEMUKAN DATA' }}</td>
                                 <td class="editable" data-field="type">{{ $histori['type'] }}</td>
                                 <td class="editable" data-field="lokasi_asal_id" data-lokasi-asal-id="{{ $histori['lokasi_asal']['id'] ?? '' }}">{{ $histori['lokasi_asal']['nama'] ?? 'TIDAK DITEMUKAN DATA' }}</td>
-                                <td class="editable" data-field="lokasi_tujuan_id" data-lokasi-tujuan-id="{{ $histori['lokasi_tujuan']['id'] ?? '' }}">{{ $histori['lokasi_tujuan']['nama'] ?? 'TIDAK DITEMUKAN DATA' }}</td>
-                                <td class="editable" data-field="tanggal">{{ $histori['tanggal'] }}</td>
+                                <td class="editable" data-field="id_lokasi_tujuan" data-lokasi-tujuan-id="{{ $histori['lokasi_tujuan']['id'] ?? '' }}">{{ $histori['lokasi_tujuan']['nama'] ?? 'TIDAK DITEMUKAN DATA' }}</td>
+                                <td class="editable" data-field="tanggal">{{ \Carbon\Carbon::parse($histori['tanggal'])->format('d F Y') }}</td>
                                 <td>
-                                    <button class="btn btn-sm btn-primary edit-btn">Edit</button>
-                                    <button class="btn btn-sm btn-success save-btn" style="display:none;">Simpan</button>
-                                    <button class="btn btn-sm btn-danger cancel-btn" style="display:none;">Batal</button>
                                     <button class="btn btn-sm btn-danger hapus-btn" data-bs-toggle="modal" data-bs-target="#konfirmasiHapusModal">Hapus</button>
                                 </td>
                             </tr>
@@ -175,107 +188,6 @@ Histori Barang
                     showAlert('Gagal menambahkan data: ' + xhr.responseText, 'danger');
                 }
             });
-        });
-
-        $('#historiBarangTable').on('click', '.edit-btn', function() {
-            var row = $(this).closest('tr');
-            row.find('.editable').each(function() {
-                var field = $(this).data('field');
-                var currentText = $(this).text();
-                var currentId = $(this).data(field.replace('_id', '-id'));
-
-                if (field === 'detail_barang_id' || field === 'lokasi_asal_id' || field === 'lokasi_tujuan_id') {
-                    var selectHtml = '<select class="form-select editing-select" data-field="' + field + '">';
-                    selectHtml += '<option value="">--Pilih--</option>';
-                    if (field === 'detail_barang_id') {
-                        @foreach ($detail_barang as $db)
-                            selectHtml += '<option value="{{ $db->id }}" ' + (currentId == {{ $db->id }} ? 'selected' : '') + '>{{ $db->kode_unik }}</option>';
-                        @endforeach
-                    } else {
-                        @foreach ($cluster as $c)
-                            selectHtml += '<option value="{{ $c->id }}" ' + (currentId == {{ $c->id }} ? 'selected' : '') + '>{{ $c->nama }}</option>';
-                        @endforeach
-                        @foreach ($depo as $d)
-                            selectHtml += '<option value="{{ $d->id }}" ' + (currentId == {{ $d->id }} ? 'selected' : '') + '>{{ $d->nama }}</option>';
-                        @endforeach
-                    }
-                    selectHtml += '</select>';
-                    $(this).html(selectHtml);
-                } else if (field === 'tanggal') {
-                    $(this).html('<input type="date" class="form-control editing-input" value="' + currentText + '">');
-                } else {
-                    $(this).attr('contenteditable', true);
-                }
-                $(this).addClass('editing');
-            });
-            row.find('.edit-btn').hide();
-            row.find('.save-btn, .cancel-btn').show();
-
-            originalData[row.data('id')] = {};
-            row.find('.editable').each(function() {
-                var field = $(this).data('field');
-                originalData[row.data('id')][field] = $(this).text();
-            });
-        });
-
-        $('#historiBarangTable').on('click', '.save-btn', function() {
-            var row = $(this).closest('tr');
-            var id = row.data('id');
-            var data = {};
-
-            row.find('.editable').each(function() {
-                var field = $(this).data('field');
-                var value;
-                if ($(this).find('select').length) {
-                    value = $(this).find('select').val();
-                    var selectedText = $(this).find('select option:selected').text();
-                    $(this).text(selectedText);
-                } else if ($(this).find('input[type="date"]').length) {
-                    value = $(this).find('input[type="date"]').val();
-                    $(this).text(value);
-                } else {
-                    value = $(this).text();
-                }
-                data[field] = value;
-            });
-
-            $.ajax({
-                url: '{{ route("admin.histori_barang.update", "") }}/' + id,
-                method: 'POST',
-                data: {
-                    ...data,
-                    _token: '{{ csrf_token() }}',
-                    _method: 'PUT'
-                },
-                success: function(response) {
-                    showAlert('Data berhasil diperbarui', 'success');
-                    row.find('.editable').attr('contenteditable', false).removeClass('editing');
-                    row.find('.save-btn, .cancel-btn').hide();
-                    row.find('.edit-btn').show();
-                    delete originalData[id];
-                },
-                error: function(xhr) {
-                    console.log(xhr.responseText);
-                    showAlert('Gagal memperbarui data: ' + xhr.responseText, 'danger');
-                }
-            });
-        });
-
-        $('#historiBarangTable').on('click', '.cancel-btn', function() {
-            var row = $(this).closest('tr');
-            var id = row.data('id');
-
-            if (originalData[id]) {
-                row.find('.editable').each(function() {
-                    var field = $(this).data('field');
-                    $(this).text(originalData[id][field]);
-                });
-                delete originalData[id];
-            }
-
-            row.find('.editable').attr('contenteditable', false).removeClass('editing');
-            row.find('.save-btn, .cancel-btn').hide();
-            row.find('.edit-btn').show();
         });
 
         $('#historiBarangTable').on('click', '.hapus-btn', function() {

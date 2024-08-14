@@ -20,6 +20,9 @@ Barang
                         <a href="{{ route('admin.barang.export') }}" class="btn btn-info">Export Barang</a>
                     </div>
 
+                    <!-- Alert untuk notifikasi -->
+                    <div id="alertContainer"></div>
+
                     <table class="table datatable" id="barangTable">
                         <thead>
                             <tr>
@@ -152,7 +155,7 @@ Barang
                                     message +
                                     '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
                                 '</div>');
-            $('.card-body').prepend(alertElement);
+            $('#alertContainer').html(alertElement);
             setTimeout(function() {
                 alertElement.alert('close');
             }, 3000);
