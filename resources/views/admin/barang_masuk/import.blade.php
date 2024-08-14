@@ -13,7 +13,7 @@
           <h6 class="font-bold text-s">Import Barang Masuk</h6>
         </div>
         <div class="flex-auto">
-              <form action="{{ route('admin.brg_masuk.import_excel') }}" method="POST" enctype="multipart/form-data" role="form">
+              <form action="{{ route('admin.barang_masuk.import_excel') }}" method="POST" enctype="multipart/form-data" role="form">
                     @csrf
                 <label class="mb-2 ml-1 text-xs font-bold">Pilih File Excel</label>
                 <div class="mb-4">

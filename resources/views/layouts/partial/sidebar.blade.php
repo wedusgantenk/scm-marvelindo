@@ -87,6 +87,11 @@
                     </a>
                 </li>
                 <li>
+                    <a href="{{ route('admin.detail_barang') }}" class="{{ Route::currentRouteName() == 'admin.detail_barang' ? 'active' : '' }}">
+                        <i class="bi bi-circle"></i><span>Detail Barang</span>
+                    </a>
+                </li>
+                <li>
                     <a href="{{ route('admin.histori_barang') }}" class="{{ Route::currentRouteName() == 'admin.histori_barang' ? 'active' : '' }}">
                         <i class="bi bi-circle"></i><span>Histori Barang</span>
                     </a>

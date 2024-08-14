@@ -138,27 +138,29 @@ class BarangMasukController extends Controller
 
     public function import_excel(Request $request)
     {
-        // Validate the request
+        // Validasi permintaan
         $this->validate($request, [
             'file' => 'required|mimes:csv,xls,xlsx'
         ]);
 
-        // Capture the uploaded file
+        // Ambil file yang diunggah
         $file = $request->file('file');
 
-        // Create a unique file name
+        // Buat nama file unik
         $nama_file = rand() . "_" . $file->getClientOriginalName();
 
-        // Move the file to the 'file_barang' folder within the 'public' directory
+        // Pindahkan file ke folder 'file_barang' dalam direktori 'public'
         $file->move(public_path('file_barang'), $nama_file);
 
-        // Import data from the uploaded file
+        // Impor data dari file yang diunggah
         $filePath = public_path('file_barang/' . $nama_file);
         if (!file_exists($filePath)) {
-            return back()->withErrors(['file' => 'File upload failed or file path is incorrect.']);
+            return back()->withErrors(['file' => 'Unggah file gagal atau jalur file tidak benar.']);
         }
 
         $data = Excel::toCollection(new BarangMasukImport, $filePath);
+
+        $duplicateCount = 0;
 
         foreach ($data as $dat) {
             foreach ($dat as $d) {
@@ -171,7 +173,20 @@ class BarangMasukController extends Controller
                     'fisik' => 1,
                 ]);
 
-                $data_barang_masuk = BarangMasuk::firstOrCreate([
+                $existingBarangMasuk = BarangMasuk::where([
+                    'id_produk' => $data_barang['id'],
+                    'tanggal' => $d['tgl_good_receive'],
+                    'no_do' => $d['no_do'],
+                    'no_po' => $d['no_po'],
+                    'kode_cluster' => $kode_cluster
+                ])->first();
+
+                if ($existingBarangMasuk) {
+                    $duplicateCount++;
+                    continue;
+                }
+
+                $data_barang_masuk = BarangMasuk::create([
                     'id_produk' => $data_barang['id'],
                     'id_petugas' => Auth::user()->id,
                     'tanggal' => $d['tgl_good_receive'],
@@ -180,7 +195,14 @@ class BarangMasukController extends Controller
                     'kode_cluster' => $kode_cluster
                 ]);
 
-                $data_detail_barang = DetailBarang::firstOrCreate([
+                $existingDetailBarang = DetailBarang::where('kode_unik', $d['iccid'])->first();
+
+                if ($existingDetailBarang) {
+                    $duplicateCount++;
+                    continue;
+                }
+
+                DetailBarang::create([
                     'id_barang' => $data_barang['id'],
                     'id_barang_masuk' => $data_barang_masuk['id'],
                     'kode_unik' => $d['iccid'],
@@ -189,7 +211,13 @@ class BarangMasukController extends Controller
             }
         }
 
-        // Redirect back with success message
-        return redirect()->route('admin.brg_masuk')->with('success', 'Barang masuk telah ditambahkan');
+        // Redirect kembali dengan pesan sukses dan peringatan jika ada duplikat
+        if ($duplicateCount > 0) {
+            return redirect()->route('admin.barang_masuk')
+                ->with('success', 'Barang masuk telah ditambahkan')
+                ->with('warning', "Terdapat $duplicateCount data duplikat yang dilewati.");
+        } else {
+            return redirect()->route('admin.barang_masuk')->with('success', 'Barang masuk telah ditambahkan');
+        }
     }
 }

@@ -5,88 +5,274 @@ Barang
 @endsection
 
 @section('content')
-<div class="w-full px-6 py-6 mx-auto">
-    <!-- table 1 -->
+<section class="section">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Daftar Barang</h5>
 
-    <div class="flex flex-wrap -mx-3">
-        <div class="flex-none w-full max-w-full px-3">
-            <div class="relative flex flex-col min-w-0 p-6 mb-6 break-words bg-white border-0 border-solid shadow-soft-xl rounded-2xl bg-clip-border">
-                <div class="font-semibold border-b-0 border-b-solid rounded-t-2xl border-b-transparent">
-                    <h6>Barang</h6>
-                </div>
-                <div class="flex object-center py-2 space-x-4 col-md-4">
-                    <div class="flex">
-                        <button class="flex px-2 py-1 mt-2 text-xs font-semibold text-white rounded-lg bg-gradient-to-tr from-red-500 to-red-900 hover:scale-102 drop-shadow-xl">
-                            <a href="{{ route('admin.barang.create')}}">Tambah</a>
+                    <div class="mb-3">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahBarangModal">
+                            Tambah
                         </button>
+                        <a href="{{ route('admin.barang.import') }}" class="btn btn-success">Import Barang</a>
+                        <a href="{{ route('admin.barang.export') }}" class="btn btn-info">Export Barang</a>
                     </div>
-                    <div class="flex">
-                        <button class="flex px-2 py-1 mt-2 text-xs font-semibold text-white rounded-lg bg-gradient-to-tr from-red-500 to-red-900 hover:scale-102 drop-shadow-xl">
-                            <a href="{{ route('admin.barang.import')}}">Upload</a>
-                        </button>
-                    </div>
-                    <div class="flex">
-                        <button class="flex px-2 py-1 mt-2 text-xs font-semibold text-white rounded-lg bg-gradient-to-tr from-red-500 to-red-900 hover:scale-102 drop-shadow-xl">
-                            <a href="{{ route('admin.barang.export')}}">Ekspor</a>
-                        </button>
-                    </div>
-                </div>
-                <div class="flex-auto pb-2">
-                    <div class="overflow-x-auto">
-                        <table class="items-center w-full px-6 py-3 mb-0 align-top border-transparent border-gray-200 table-auto text-slate-600" id="datatables">
-                            <thead class="align-bottom">
-                                <tr>
-                                    <th class="w-12 border-t">Nomor</th>
-                                    <th class="border-t">Nama</th>
-                                    <th class="border-t">Gambar</th>
-                                    <th class="border-t">Keterangan</th>
-                                    <th class="border-t">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="px-6 py-3 text-xs font-semibold text-left border-t border-spacing-4">
-                                @forelse ($data as $d)
-                                <tr>
-                                    <td class="text-sm font-normal leading-normal border-t">
-                                        {{ $loop->iteration }}.
-                                    </td>
-                                    <td class="text-sm font-normal leading-normal border-t">
-                                        {{ $d['nama'] }}
-                                    </td>
-                                    <td class="text-sm font-normal leading-normal border">
-                                        @if($d['gambar'])
-                                        <img src="{{ asset('storage/images/barang/' . $d['gambar']) }}" alt="Gambar {{ $d['nama'] }}" class="object-cover w-16 h-16">
-                                        @else
-                                        Tidak ada gambar
-                                        @endif
-                                    </td>
-                                    <td class="text-sm font-normal leading-normal border-t">
-                                        {{ substr($d['keterangan'], 0, 50) }}
-                                        {{ strlen($d['keterangan']) > 50 ? '...' : '' }}
-                                    </td>
 
-                                    <td class="flex text-sm font-normal leading-normal border-t">
-                                        <a href="{{ route('admin.barang.edit', $d['id']) }}" class="flex btn btn-success btn-xs"><i class="m-2 fas fa-edit fa-lg hover:scale-102"></i></a>
-                                        <a class="flex btn btn-danger btn-xs">
-                                            <form action="{{ route('admin.barang.delete', $d['id']) }}" method="post" onsubmit="return confirm('Apakah yakin ingin menghapus barang {{ $d['nama'] }} ?')">
-                                                @csrf
-                                                @method('delete')
-                                                <button type="submit" name="submit"><i class="flex m-2 fas fa-trash-alt fa-lg hover:scale-102"></i></button>
-                                            </form>
-                                        </a>
-                                    </td>
-                                </tr>
-                                @empty
-                                <tr>
-                                    <th colspan="5" class="p-2 text-center bg-transparent whitespace-nowrap shadow-transparent">
-                                        Tidak ada data</th class="border-t">
-                                </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
+                    <table class="table datatable" id="barangTable">
+                        <thead>
+                            <tr>
+                                <th>Nomor</th>
+                                <th>Nama</th>
+                                <th>Jenis Barang</th>
+                                <th>Gambar</th>
+                                <th>Keterangan</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($data as $d)
+                            <tr data-id="{{ $d['id'] }}">
+                                <td>{{ $loop->iteration }}</td>
+                                <td class="editable" data-field="nama">{{ $d['nama'] }}</td>
+                                <td class="editable" data-field="id_jenis">
+                                    <span class="jenis-text">{{ $d->jenis_barang->nama ?? 'Tidak Ada' }}</span>
+                                    <select class="form-select jenis-select" style="display: none;">
+                                        @foreach($jenis_barang as $jenis)
+                                            <option value="{{ $jenis->id }}" {{ $d->id_jenis == $jenis->id ? 'selected' : '' }}>{{ $jenis->nama }}</option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                                <td class="editable" data-field="gambar">
+                                    <img src="{{ $d['gambar'] ? asset('images/barang/'.$d['gambar']) : asset('assets/img/no_image.jpg') }}" alt="{{ $d['nama'] }}" class="img-thumbnail" style="max-width: 100px;">
+                                    <input type="file" class="form-control gambar-input" style="display: none;">
+                                </td>
+                                <td class="editable" data-field="keterangan">
+                                    {{ Str::limit($d['keterangan'], 50) }}
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-warning edit-btn">Edit</button>
+                                    <button class="btn btn-sm btn-success save-btn" style="display:none;">Simpan</button>
+                                    <button class="btn btn-sm btn-danger cancel-btn" style="display:none;">Batal</button>
+                                    <button class="btn btn-sm btn-danger hapus-btn" data-bs-toggle="modal" data-bs-target="#konfirmasiHapusModal">Hapus</button>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="6" class="text-center">Tidak ada data</td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
-</div>
+
+    <!-- Modal Tambah Barang -->
+    <div class="modal fade" id="tambahBarangModal" tabindex="-1" aria-labelledby="tambahBarangModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="tambahBarangModalLabel">Tambah Barang</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="tambahBarangForm" action="{{ route('admin.barang.store') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <div class="mb-3">
+                            <label for="nama" class="form-label">Nama Barang</label>
+                            <input type="text" class="form-control" id="nama" name="nama" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_jenis" class="form-label">Jenis Barang</label>
+                            <select class="form-select" id="id_jenis" name="id_jenis" required>
+                                <option value="">Pilih Jenis Barang</option>
+                                @foreach($jenis_barang as $jenis)
+                                    <option value="{{ $jenis->id }}">{{ $jenis->nama }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="fisik" class="form-label">Fisik</label>
+                            <select class="form-select" id="fisik" name="fisik" required>
+                                <option value="1">Ya</option>
+                                <option value="0">Tidak</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="gambar" class="form-label">Gambar</label>
+                            <input type="file" class="form-control" id="gambar" name="gambar">
+                        </div>
+                        <div class="mb-3">
+                            <label for="keterangan" class="form-label">Keterangan</label>
+                            <textarea class="form-control" id="keterangan" name="keterangan" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" form="tambahBarangForm" class="btn btn-primary">Simpan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Konfirmasi Hapus Data -->
+    <div class="modal fade" id="konfirmasiHapusModal" tabindex="-1" aria-labelledby="konfirmasiHapusModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="konfirmasiHapusModalLabel">Konfirmasi Hapus Data</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Apakah Anda yakin ingin menghapus data ini?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-danger" id="konfirmasiHapusBtn">Hapus</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
 @endsection
+
+@push('scripts')
+<script>
+    $(document).ready(function() {
+        var originalData = {};
+        var rowToDelete;
+
+        function showAlert(message, type) {
+            var alertElement = $('<div class="alert alert-' + type + ' alert-dismissible fade show" role="alert">' +
+                                    message +
+                                    '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
+                                '</div>');
+            $('.card-body').prepend(alertElement);
+            setTimeout(function() {
+                alertElement.alert('close');
+            }, 3000);
+        }
+
+        $('#barangTable').on('click', '.edit-btn', function() {
+            var row = $(this).closest('tr');
+            row.find('.editable').attr('contenteditable', true).addClass('editing');
+            row.find('.edit-btn').hide();
+            row.find('.save-btn, .cancel-btn').show();
+            row.find('.gambar-input').show();
+            row.find('.jenis-text').hide();
+            row.find('.jenis-select').show();
+
+            originalData[row.data('id')] = {};
+            row.find('.editable').each(function() {
+                var field = $(this).data('field');
+                originalData[row.data('id')][field] = $(this).html();
+            });
+        });
+
+        $('#barangTable').on('click', '.save-btn', function() {
+            var row = $(this).closest('tr');
+            var id = row.data('id');
+            var formData = new FormData();
+
+            row.find('.editable').each(function() {
+                var field = $(this).data('field');
+                if (field === 'gambar') {
+                    var file = row.find('.gambar-input')[0].files[0];
+                    if (file) {
+                        formData.append('gambar', file);
+                    }
+                } else if (field === 'id_jenis') {
+                    formData.append(field, row.find('.jenis-select').val());
+                } else {
+                    formData.append(field, $(this).text());
+                }
+            });
+
+            formData.append('_token', '{{ csrf_token() }}');
+            formData.append('_method', 'PUT');
+
+            $.ajax({
+                url: '{{ route("admin.barang.update", "") }}/' + id,
+                method: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    showAlert('Data berhasil diperbarui', 'success');
+                    row.find('.editable').attr('contenteditable', false).removeClass('editing');
+                    row.find('.save-btn, .cancel-btn').hide();
+                    row.find('.edit-btn').show();
+                    row.find('.gambar-input').hide();
+                    row.find('.jenis-text').text(row.find('.jenis-select option:selected').text()).show();
+                    row.find('.jenis-select').hide();
+                    if (response.gambar) {
+                        row.find('img').attr('src', response.gambar);
+                    }
+                    delete originalData[id];
+                },
+                error: function(xhr) {
+                    if (xhr.status === 405) {
+                        showAlert('Metode tidak diizinkan. Pastikan rute dan metode permintaan sudah benar.', 'danger');
+                    } else {
+                        showAlert('Gagal memperbarui data: ' + xhr.responseText, 'danger');
+                    }
+                }
+            });
+        });
+
+        $('#barangTable').on('click', '.cancel-btn', function() {
+            var row = $(this).closest('tr');
+            var id = row.data('id');
+
+            if (originalData[id]) {
+                row.find('.editable').each(function() {
+                    var field = $(this).data('field');
+                    $(this).html(originalData[id][field]);
+                });
+                delete originalData[id];
+            }
+
+            row.find('.editable').attr('contenteditable', false).removeClass('editing');
+            row.find('.save-btn, .cancel-btn').hide();
+            row.find('.edit-btn').show();
+            row.find('.gambar-input').hide();
+            row.find('.jenis-text').show();
+            row.find('.jenis-select').hide();
+        });
+
+        $('#barangTable').on('click', '.hapus-btn', function() {
+            rowToDelete = $(this).closest('tr');
+        });
+
+        $('#konfirmasiHapusBtn').on('click', function() {
+            var id = rowToDelete.data('id');
+            $.ajax({
+                url: '{{ route("admin.barang.delete", "") }}/' + id,
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    _method: 'DELETE'
+                },
+                success: function(response) {
+                    showAlert('Data berhasil dihapus', 'success');
+                    rowToDelete.remove();
+                    $('#konfirmasiHapusModal').modal('hide');
+                },
+                error: function(xhr) {
+                    if (xhr.status === 405) {
+                        showAlert('Metode tidak diizinkan. Pastikan rute dan metode permintaan sudah benar.', 'danger');
+                    } else {
+                        showAlert('Gagal menghapus data: ' + xhr.responseText, 'danger');
+                    }
+                    $('#konfirmasiHapusModal').modal('hide');
+                }
+            });
+        });
+    });
+</script>
+@endpush

@@ -13,7 +13,7 @@ Tambah Barang
                     <h6>Tambah Barang</h6>
                 </div>
                 <div class="flex-auto ">
-                    <form id="barang" action="{{ route('admin.brg_masuk.store') }}" method="POST" enctype="multipart/form-data" role="form">
+                    <form id="barang" action="{{ route('admin.barang_masuk.store') }}" method="POST" enctype="multipart/form-data" role="form">
                         @csrf
                         <label class="mb-2 ml-1 text-xs font-bold text-slate-700">Tanggal</label>
                         <div class="mb-4">
