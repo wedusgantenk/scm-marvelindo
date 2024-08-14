@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\TransaksiSalesDetail;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class TransaksiSalesDetailController extends Controller
 {
@@ -78,38 +80,26 @@ class TransaksiSalesDetailController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate(
-            [
+        $validator = Validator::make($request->all(),[
                 'id_barang' => 'required|numeric',
                 'id_transaksi' => 'required|numeric|unique:transaksi_distribusi_sales_detail',
                 'kode_unik' => 'required'
-            ],
-            [
-                'id_barang.required' => 'barang harus dipilih',
-                'id_barang.numeric' => 'barang harus dipilih',
-                'id_transaksi.required' => 'id transaksi harus dipilih',
-                'id_transaksi.numeric' => 'id transaksi harus dipilih',
-                'id_transaksi.unique' => 'id transaksi tidak boleh sama',
-                'kode_unik.required' => 'kode unik harus diisi'
-            ]
-        );
-        $parameter = [
-            'kode_unik' => $request->kode_unik,
-            'id_barang' => $request->id_barang,
-            'id_transaksi' => $request->id_transaksi,
-            'status' => 'true',
-        ];
-        $client = new Client;
-        $url = "http://scmapi.satriatech.com/api/admin/transaksisalesdetail";
-        $response = $client->request('POST', $url, [
-            'headers' => [
-                'Content-type' => 'application/json'
-            ],
-            'body' => json_encode($parameter)
         ]);
-        $content = $response->getBody()->getContents();
-        $contentArray = json_decode($content, true);
-        return redirect()->route('admin.transaksi.distribusi_sales.detail')->with('success', 'sales telah ditambahkan');
+            
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+    
+    
+        $data = new TransaksiSalesDetail();
+        
+        $data->id_barang = $request->id_barang;
+        $data->id_transaksi = $request->id_transaksi;
+        $data->kode_unik = $request->kode_unik;
+    
+        $data->save();
+    
+        return redirect()->route('admin.transaksi_distribusi_sales')->with('success', 'Data berhasil ditambahkan');
     }
 
     public function edit($id)
@@ -196,11 +186,13 @@ class TransaksiSalesDetailController extends Controller
 
     public function destroy($id)
     {
-        $client = new Client();
-        $url = "http://scmapi.satriatech.com/api/admin/transaksisalesdetail/$id";
-        $response = $client->request('DELETE', $url);
-        $content = $response->getBody()->getContents();
-        $contentArray = json_decode($content, true);
-        return redirect()->route('admin.transaksi.distribusi_sales.detail')->with('success', 'sales telah dihapus');
+       // Temukan data yang akan dihapus
+    $data = TransaksiSalesDetail::findOrFail($id);
+
+    // Hapus data
+    $data->delete();
+
+    // Redirect dengan pesan sukses
+    return redirect()->route('admin.transaksi_distribusi_sales')->with('success', 'Data berhasil dihapus');
     }
 }

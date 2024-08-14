@@ -124,7 +124,7 @@ Distribusi ke Sales
                         </div>
                     </div>
 
-                    <!-- Modal Edit Data -->
+                    {{-- <!-- Modal Edit Data -->
                     @foreach($transaksiDistribusiSales as $d)
                     <div class="modal fade" id="editDataModal{{ $d->id }}" tabindex="-1" aria-labelledby="editDataModalLabel{{ $d->id }}" aria-hidden="true">
                         <div class="modal-dialog">
@@ -183,7 +183,7 @@ Distribusi ke Sales
                             </div>
                         </div>
                     </div>
-                    @endforeach
+                    @endforeach --}}
 
                     <!-- Modal Konfirmasi Hapus Data -->
                     <div class="modal fade" id="konfirmasiHapusModal" tabindex="-1" aria-labelledby="konfirmasiHapusModalLabel" aria-hidden="true">
@@ -250,7 +250,7 @@ Distribusi ke Sales
                                      <!-- Tombol Lihat -->
                                     <a class="btn btn-sm btn-info" href="{{ route('admin.transaksi_distribusi_sales.show', ['id' => $d->id]) }}">Lihat</a>
 
-                                    <a class="btn btn-sm btn-primary" href="#editDataModal{{ $d->id }}" data-bs-toggle="modal">Edit</a>
+                                    {{-- <a class="btn btn-sm btn-primary" href="#editDataModal{{ $d->id }}" data-bs-toggle="modal">Edit</a> --}}
                                     <!-- Tombol Hapus -->
                                     <a type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#konfirmasiHapusModal" data-id="{{ $d->id }}">Hapus</a>
 
@@ -276,7 +276,7 @@ Distribusi ke Sales
             btn.addEventListener('click', function() {
                 var id = btn.getAttribute('data-id');
                 var form = document.getElementById('deleteForm');
-                form.action = '/transaksi/distribusi_depo/' + id;
+                form.action = '/transaksi/distribusi_sales/' + id;
             });
         });
     });

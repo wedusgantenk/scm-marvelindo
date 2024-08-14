@@ -16,7 +16,7 @@ class TransaksiDepoImport implements ToCollection, WithHeadingRow
 
     public function collection(Collection $rows)
     {
-        $this->data;
+        $this->data = $rows;
         
     }
 

@@ -124,7 +124,7 @@ Distribusi ke Depo
                         </div>
                     </div>
 
-                    <!-- Modal Edit Data -->
+                    {{-- <!-- Modal Edit Data -->
                     @foreach($transaksiDistribusiDepos as $d)
                     <div class="modal fade" id="editDataModal{{ $d->id }}" tabindex="-1" aria-labelledby="editDataModalLabel{{ $d->id }}" aria-hidden="true">
                         <div class="modal-dialog">
@@ -183,7 +183,7 @@ Distribusi ke Depo
                             </div>
                         </div>
                     </div>
-                    @endforeach
+                    @endforeach --}}
 
                     <!-- Modal Konfirmasi Hapus Data -->
                     <div class="modal fade" id="konfirmasiHapusModal" tabindex="-1" aria-labelledby="konfirmasiHapusModalLabel" aria-hidden="true">
@@ -250,7 +250,7 @@ Distribusi ke Depo
                                      <!-- Tombol Lihat -->
                                     <a class="btn btn-sm btn-info" href="{{ route('admin.transaksi_distribusi_depo.show', ['id' => $d->id]) }}">Lihat</a>
 
-                                    <a class="btn btn-sm btn-primary" href="#editDataModal{{ $d->id }}" data-bs-toggle="modal">Edit</a>
+                                    {{-- <a class="btn btn-sm btn-primary" href="#editDataModal{{ $d->id }}" data-bs-toggle="modal">Edit</a> --}}
                                     <!-- Tombol Hapus -->
                                     <a type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#konfirmasiHapusModal" data-id="{{ $d->id }}">Hapus</a>
 

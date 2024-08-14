@@ -212,11 +212,10 @@ public function destroy($id)
 {
     // Validate the incoming request
     $this->validate($request, [
-        'file' => 'required|file|mimes:csv,xls,xlsx', // Contoh validasi tambahan untuk ID Sales
-        'id_depo' => 'required|exists:depo,id', // Contoh validasi tambahan untuk ID Depo
+        'file' => 'required|file|mimes:csv,xls,xlsx',
+        'id_depo' => 'required|exists:depo,id',
         'id_petugas' => 'required|exists:petugas,id',
         'id_sales' => 'required|exists:sales,id'
-
     ]);
 
     // Retrieve the file from the request
@@ -226,12 +225,11 @@ public function destroy($id)
     $nama_file = rand() . "_" . $file->getClientOriginalName();
 
     // Move the file to a directory within the storage folder
-    $destinationPath = storage_path('app/public/excel_transaksi_depo');
+    $destinationPath = storage_path('app/public/excel_transaksi_sales');
     $file->move($destinationPath, $nama_file);
 
     // Start a database transaction
     DB::beginTransaction();
-
 
     try {
         // Import data using Laravel Excel
@@ -241,41 +239,43 @@ public function destroy($id)
 
         // Get the imported data
         $importedData = $import->getData();
+        
+        // HIGHLIGHTED: Buat transaksi sekali di luar loop
+        $userId = Auth::id();
+        $transaksi = TransaksiSales::create([
+            'id_petugas' => $userId,
+            'id_sales' => $request->id_sales,
+            'id_depo' => $request->id_depo,
+            'tanggal' => Carbon::now(),
+            'status' => ''
+        ]);
 
+        $now = Carbon::now();
 
+        // HIGHLIGHTED: Format kode dengan format DDMMYYMinutesMinutesHH
+        $transaksiCode = $now->format('dmyHis');
 
         // Save each imported row to the database
         foreach ($importedData as $collection) {
             $row = $collection->toArray();
 
+            Log::info('Imported Row: ' . print_r($row, true));
 
-            ############ mencari barang merujuk pada item_name
             // Mencari barang berdasarkan nama
-            $barang = Barang::where('nama', $row['ITEM NAME'])->first();
-            
-            $userId = Auth::id();
+            $barang = Barang::where('nama', $row['item_name'])->first();
 
-            TransaksiSales::create([
-                'id_petugas' => $userId,
-                'id_sales' => $request->id_sales,
-                'id_depo' => $request->id_depo,
-                'tanggal' => Carbon::now(),
-                'status' => ''
-      
-            ]);
-
-            
-            $now = Carbon::now();
-             // Format kode dengan format DDMMYYMinutesMinutesHH
-            $transaksiCode = $now->format('d') . $now->format('m') . $now->format('y') . $now->format('i') . $now->format('i') . $now->format('H');
-            TransaksiSalesDetail::firstOrCreate([
-                'id_transaksi' => $row['id_transaksi'],
-                'transaksi_code' => $transaksiCode,
-                'id_barang' => $barang->id,
-                'kode_unik' => $row['ICCID'],
-                'status' => ''
-            ]);
-
+            if ($barang) {
+                // HIGHLIGHTED: Buat TransaksiSalesDetail terkait dengan satu transaksi
+                TransaksiSalesDetail::create([
+                    'id_transaksi' => $transaksi->id,  // HIGHLIGHTED: Menggunakan id dari transaksi yang dibuat di luar loop
+                    'transaksi_code' => $transaksiCode, // HIGHLIGHTED: Menggunakan kode transaksi yang sama untuk semua detail
+                    'id_barang' => $barang->id,
+                    'kode_unik' => $row['iccid'],
+                    'status' => ''
+                ]);
+            } else {
+                Log::warning('Barang not found for item name: ' . $row['item_name']);
+            }
         }
 
         // Commit the transaction
@@ -302,4 +302,5 @@ public function destroy($id)
         return redirect()->back()->with('error', 'There was an error processing your file. ' . $e->getMessage());
     }
 }
+
 }
