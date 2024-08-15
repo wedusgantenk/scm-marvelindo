@@ -12,6 +12,8 @@ Distribusi ke Sales
                 <div class="card-body">
                     <button class="btn btn-primary my-3" data-bs-toggle="modal" data-bs-target="#tambahDataModal">Tambah Data</button>
                     <button class="btn btn-info my-3" data-bs-toggle="modal" data-bs-target="#importDataModal">Import Data</button>
+                    <!-- Tombol Download Template -->
+                    <a href="{{ route('download-template-sales') }}" class="btn btn-success">Download Template</a>
 
                     
                     <!-- Modal Import Data -->

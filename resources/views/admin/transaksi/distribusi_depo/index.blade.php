@@ -12,6 +12,10 @@ Distribusi ke Depo
                 <div class="card-body">
                     <button class="btn btn-primary my-3" data-bs-toggle="modal" data-bs-target="#tambahDataModal">Tambah Data</button>
                     <button class="btn btn-info my-3" data-bs-toggle="modal" data-bs-target="#importDataModal">Import Data</button>
+                    <!-- Tombol Download Template -->
+                    <a href="{{ route('download-template-depo') }}" class="btn btn-success">Download Template</a>
+
+                    
 
 
                     <!-- Modal Import Data -->
@@ -243,7 +247,7 @@ Distribusi ke Depo
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $d->petugas->username }}</td>
-                                <td>{{ $d->cluster->nama }}</td>
+                                <td>{{ $d->cluster->nama ?? 'N/A' }}</td>
                                 <td>{{ $d->depo->nama ?? 'N/A' }}</td>
                                 <td>{{ $d->tanggal }}</td>
                                 <td>{{ $d->status }}</td>
