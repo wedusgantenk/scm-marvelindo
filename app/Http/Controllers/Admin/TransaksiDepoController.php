@@ -33,6 +33,8 @@ class TransaksiDepoController extends Controller
             $item->formatted_tanggal = Carbon::parse($item->tanggal)->format('Y-m-d');
             return $item;
         });
+
+        // dd($transaksiDistribusiDepos);
         return view('admin.transaksi.distribusi_depo.index', compact('transaksiDistribusiDepos'));
     }
 
