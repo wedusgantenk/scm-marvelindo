@@ -68,7 +68,7 @@ Route::delete('transaksi/distribusi_depo/{id}', [App\Http\Controllers\Admin\Tran
 Route::post('transaksi/distribusi_depo/import_excel', [App\Http\Controllers\Admin\TransaksiDepoController::class, 'import_excel'])->name('admin.transaksi_distribusi_depo.import_excel')->middleware(['checkRole:admin']);
 // Route::get('transaksi/distribusi_depo/histori/{id}', [App\Http\Controllers\Admin\TransaksiDepoController::class, 'histori'])->name('admin.transaksi_distribusi_depo.histori')->middleware(['checkRole:admin']);
 Route::get('transaksi/distribusi_depo/{id}', [App\Http\Controllers\Admin\TransaksiDepoController::class, 'show'])->name('admin.transaksi_distribusi_depo.show')->middleware(['checkRole:admin']);
-Route::get('/download-template', function () {
+Route::get('/download-template-depo', function () {
     $filePath = storage_path('app/public/template_distribusidepo/template_distribusidepo.xlsx');
     return response()->download($filePath);
 })->name('download-template-depo');
@@ -82,7 +82,7 @@ Route::delete('transaksi/distribusi_sales/{id}', [App\Http\Controllers\Admin\Tra
 Route::post('transaksi/distribusi_sales/import', [App\Http\Controllers\Admin\TransaksiSalesController::class, 'import_excel'])->name('admin.transaksi_distribusi_sales.import_excel')->middleware(['checkRole:admin']);
 // Route::get('transaksi/distribusi_sales/histori/{id}', [App\Http\Controllers\Admin\TransaksiSalesController::class, 'histori'])->name('admin.transaksi_distribusi_sales.histori')->middleware(['checkRole:admin']);
 Route::get('transaksi/distribusi_sales/{id}', [App\Http\Controllers\Admin\TransaksiSalesController::class, 'show'])->name('admin.transaksi_distribusi_sales.show')->middleware(['checkRole:admin']);
-Route::get('/download-template', function () {
+Route::get('/download-template-sales', function () {
     $filePath = storage_path('app/public/template_distribusisales/template_distribusisales.xlsx');
     return response()->download($filePath);
 })->name('download-template-sales');
