@@ -248,9 +248,9 @@ Distribusi ke Sales
                         @forelse ($transaksiDistribusiSales as $d)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
-                            <td>{{ $d->petugas->username }}</td>
-                            <td>{{ $d->sales->nama }}</td>
-                            <td>{{ $d->depo->nama }}</td>
+                            <td>{{ $d->petugas->username ?? 'N/A'}}</td>
+                            <td>{{ $d->sales->nama ?? 'N/A'}}</td>
+                            <td>{{ $d->depo->nama ?? 'N/A'}}</td>
                             <td>{{ $d->tanggal }}</td>
                             <td>{{ $d->status }}</td>
                             <td>
