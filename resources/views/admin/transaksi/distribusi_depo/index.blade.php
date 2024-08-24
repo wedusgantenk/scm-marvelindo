@@ -12,10 +12,7 @@ Distribusi ke Depo
                 <div class="card-body">
                     <button class="btn btn-primary my-3" data-bs-toggle="modal" data-bs-target="#tambahDataModal">Tambah Data</button>
                     <button class="btn btn-info my-3" data-bs-toggle="modal" data-bs-target="#importDataModal">Import Data</button>
-                    <!-- Tombol Download Template -->
-                    <a href="{{ route('download-template-depo') }}" class="btn btn-success">Download Template</a>
 
-                    
 
 
                     <!-- Modal Import Data -->
@@ -29,6 +26,16 @@ Distribusi ke Depo
                             <div class="modal-body">
                                 <form action="{{ route('admin.transaksi_distribusi_depo.import_excel') }}" method="POST" enctype="multipart/form-data">
                                     @csrf
+                                    <div class="mb-3 text-muted">
+                                        <p>Untuk mempermudah pengisian data, gunakan template Excel berikut:</p>
+                                        <a href="{{ asset('template/distribusi_depo.xlsx') }}" class="btn btn-outline-success" download>
+                                            <div class="icon" style="display: flex; align-items: center;">
+                                                <i class="ri-file-excel-2-line" style=" font-size: 1.2rem;"></i>
+                                                <span style="margin-left: 0.5rem; ">Download Template Excel</span>
+                                            </div>
+                                        </a>
+                                    </div>
+
                                     <div class="mb-3">
                                         <label for="id_cluster" class="form-label">Pilih Cluster</label>
                                         <select class="form-select" id="id_cluster" name="id_cluster" required>

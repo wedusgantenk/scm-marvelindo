@@ -12,61 +12,66 @@ Distribusi ke Sales
                 <div class="card-body">
                     <button class="btn btn-primary my-3" data-bs-toggle="modal" data-bs-target="#tambahDataModal">Tambah Data</button>
                     <button class="btn btn-info my-3" data-bs-toggle="modal" data-bs-target="#importDataModal">Import Data</button>
-                    <!-- Tombol Download Template -->
-                    <a href="{{ route('download-template-sales') }}" class="btn btn-success">Download Template</a>
-
-                    
                     <!-- Modal Import Data -->
-                <div class="modal fade" id="importDataModal" tabindex="-1" aria-labelledby="importDataModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="importDataModalLabel">Import Data</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form action="{{ route('admin.transaksi_distribusi_sales.import_excel') }}" method="POST" enctype="multipart/form-data">
-                                    @csrf
-                                    <div class="mb-3">
-                                        <label for="id_sales" class="form-label">Pilih Sales</label>
-                                        <select class="form-select" id="id_sales" name="id_sales" required>
-                                            @foreach(App\Models\Sales::all() as $sales)
+                    <div class="modal fade" id="importDataModal" tabindex="-1" aria-labelledby="importDataModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="importDataModalLabel">Import Data</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="{{ route('admin.transaksi_distribusi_sales.import_excel') }}" method="POST" enctype="multipart/form-data">
+                                        @csrf
+                                        <div class="mb-3 text-muted">
+                                            <p>Untuk mempermudah pengisian data, gunakan template Excel berikut:</p>
+                                            <a href="{{ asset('template/distribusi_sales.xlsx') }}" class="btn btn-outline-success" download>
+                                                <div class="icon" style="display: flex; align-items: center;">
+                                                    <i class="ri-file-excel-2-line" style=" font-size: 1.2rem;"></i>
+                                                    <span style="margin-left: 0.5rem; ">Download Template Excel</span>
+                                                </div>
+                                            </a>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="id_sales" class="form-label">Pilih Sales</label>
+                                            <select class="form-select" id="id_sales" name="id_sales" required>
+                                                @foreach(App\Models\Sales::all() as $sales)
                                                 <option value="{{ $sales->id }}">{{ $sales->nama }}</option>
-                                            @endforeach
-                                        </select>
+                                                @endforeach
+                                            </select>
 
-                                        <label for="id_depo" class="form-label">Pilih Depo</label>
-                                        <select class="form-select" id="id_depo" name="id_depo" required>
-                                            @foreach(App\Models\Depo::all() as $depo)
+                                            <label for="id_depo" class="form-label">Pilih Depo</label>
+                                            <select class="form-select" id="id_depo" name="id_depo" required>
+                                                @foreach(App\Models\Depo::all() as $depo)
                                                 <option value="{{ $depo->id }}">{{ $depo->nama }}</option>
-                                            @endforeach
-                                        </select>
+                                                @endforeach
+                                            </select>
 
-                                        <select class="form-select" id="id_petugas" name="id_petugas" required hidden>
-                                            @php
+                                            <select class="form-select" id="id_petugas" name="id_petugas" required hidden>
+                                                @php
                                                 // Ambil informasi petugas yang sedang login
                                                 $petugas = Auth::user();
-                                            @endphp
-                                            <option value="{{ $petugas->id }}" selected>
-                                                {{ $petugas->id }} - {{ $petugas->username }}
-                                            </option>
-                                        </select>
+                                                @endphp
+                                                <option value="{{ $petugas->id }}" selected>
+                                                    {{ $petugas->id }} - {{ $petugas->username }}
+                                                </option>
+                                            </select>
 
-                                        <!-- Input untuk tanggal dengan nilai default tanggal saat ini -->
-                                        <input type="date" id="tanggal" name="tanggal" value="{{ \Carbon\Carbon::now()->format('Y-m-d') }}" hidden>
+                                            <!-- Input untuk tanggal dengan nilai default tanggal saat ini -->
+                                            <input type="date" id="tanggal" name="tanggal" value="{{ \Carbon\Carbon::now()->format('Y-m-d') }}" hidden>
 
-                                        <!-- Input untuk status dengan nilai string kosong -->
-                                        <input type="hidden" id="status" name="status" value="-" hidden>
+                                            <!-- Input untuk status dengan nilai string kosong -->
+                                            <input type="hidden" id="status" name="status" value="-" hidden>
 
-                                        <label for="file" class="form-label">Choose Excel File</label>
-                                        <input type="file" class="form-control" id="file" name="file" required>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">Import</button>
-                                </form>
+                                            <label for="file" class="form-label">Choose Excel File</label>
+                                            <input type="file" class="form-control" id="file" name="file" required>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Import</button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
                     <!-- Modal Tambah Data -->
                     <div class="modal fade" id="tambahDataModal" tabindex="-1" aria-labelledby="tambahDataModalLabel" aria-hidden="true">
@@ -83,7 +88,7 @@ Distribusi ke Sales
                                             <label for="id_petugas" class="form-label">Nama Petugas</label>
                                             <select class="form-select" id="id_petugas" name="id_petugas" required>
                                                 @foreach(App\Models\Petugas::all() as $petugas)
-                                                    <option value="{{ $petugas->id }}">{{ $petugas->username }}</option>
+                                                <option value="{{ $petugas->id }}">{{ $petugas->username }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -92,7 +97,7 @@ Distribusi ke Sales
                                             <label for="id_sales" class="form-label">Nama Sales</label>
                                             <select class="form-select" id="id_sales" name="id_sales" required>
                                                 @foreach(App\Models\Sales::all() as $sales)
-                                                    <option value="{{ $sales->id }}">{{ $sales->nama }}</option>
+                                                <option value="{{ $sales->id }}">{{ $sales->nama }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -101,7 +106,7 @@ Distribusi ke Sales
                                             <label for="id_depo" class="form-label">Nama Depo</label>
                                             <select class="form-select" id="id_depo" name="id_depo" required>
                                                 @foreach(App\Models\Depo::all() as $depo)
-                                                    <option value="{{ $depo->id }}">{{ $depo->nama }}</option>
+                                                <option value="{{ $depo->id }}">{{ $depo->nama }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -115,7 +120,7 @@ Distribusi ke Sales
                                             <label for="status" class="form-label">Status</label>
                                             <input type="text" class="form-control" id="status" name="status" required>
                                         </div>
-                                        
+
                                         <button type="submit" class="btn btn-success">Simpan</button>
                                     </form>
                                 </div>
@@ -129,145 +134,145 @@ Distribusi ke Sales
                     {{-- <!-- Modal Edit Data -->
                     @foreach($transaksiDistribusiSales as $d)
                     <div class="modal fade" id="editDataModal{{ $d->id }}" tabindex="-1" aria-labelledby="editDataModalLabel{{ $d->id }}" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="editDataModalLabel{{ $d->id }}">Form Edit Data</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <form action="{{ route('admin.transaksi_distribusi_sales.update', $d->id) }}" method="POST">
-                                        @csrf
-                                        @method('PUT')
-                                        <div class="mb-3">
-                                            <label for="edit_id_petugas{{ $d->id }}" class="form-label">Nama Petugas</label>
-                                            <select class="form-select" id="edit_id_petugas{{ $d->id }}" name="id_petugas" required>
-                                                @foreach(App\Models\Petugas::all() as $petugas)
-                                                    <option value="{{ $petugas->id }}" {{ $petugas->id == $d->id_petugas ? 'selected' : '' }}>{{ $petugas->username }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editDataModalLabel{{ $d->id }}">Form Edit Data</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="{{ route('admin.transaksi_distribusi_sales.update', $d->id) }}" method="POST">
+                                    @csrf
+                                    @method('PUT')
+                                    <div class="mb-3">
+                                        <label for="edit_id_petugas{{ $d->id }}" class="form-label">Nama Petugas</label>
+                                        <select class="form-select" id="edit_id_petugas{{ $d->id }}" name="id_petugas" required>
+                                            @foreach(App\Models\Petugas::all() as $petugas)
+                                            <option value="{{ $petugas->id }}" {{ $petugas->id == $d->id_petugas ? 'selected' : '' }}>{{ $petugas->username }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
 
-                                        <div class="mb-3">
-                                            <label for="edit_id_sales{{ $d->id }}" class="form-label">Nama Sales</label>
-                                            <select class="form-select" id="edit_id_sales{{ $d->id }}" name="id_sales" required>
-                                                @foreach(App\Models\Sales::all() as $sales)
-                                                    <option value="{{ $sales->id }}" {{ $sales->id == $d->id_sales ? 'selected' : '' }}>{{ $sales->nama }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
+                                    <div class="mb-3">
+                                        <label for="edit_id_sales{{ $d->id }}" class="form-label">Nama Sales</label>
+                                        <select class="form-select" id="edit_id_sales{{ $d->id }}" name="id_sales" required>
+                                            @foreach(App\Models\Sales::all() as $sales)
+                                            <option value="{{ $sales->id }}" {{ $sales->id == $d->id_sales ? 'selected' : '' }}>{{ $sales->nama }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
 
-                                        <div class="mb-3">
-                                            <label for="edit_id_depo{{ $d->id }}" class="form-label">Nama Depo</label>
-                                            <select class="form-select" id="edit_id_depo{{ $d->id }}" name="id_depo" required>
-                                                @foreach(App\Models\Depo::all() as $depo)
-                                                    <option value="{{ $depo->id }}" {{ $depo->id == $d->id_depo ? 'selected' : '' }}>{{ $depo->nama }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
+                                    <div class="mb-3">
+                                        <label for="edit_id_depo{{ $d->id }}" class="form-label">Nama Depo</label>
+                                        <select class="form-select" id="edit_id_depo{{ $d->id }}" name="id_depo" required>
+                                            @foreach(App\Models\Depo::all() as $depo)
+                                            <option value="{{ $depo->id }}" {{ $depo->id == $d->id_depo ? 'selected' : '' }}>{{ $depo->nama }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
 
-                                        <div class="mb-3">
-                                            <label for="edit_tanggal{{ $d->id }}" class="form-label">Tanggal</label>
-                                            <input type="date" class="form-control" id="edit_tanggal{{ $d->id }}" name="tanggal" value="{{ $d->formatted_tanggal }}" required>
-                                        </div>
+                                    <div class="mb-3">
+                                        <label for="edit_tanggal{{ $d->id }}" class="form-label">Tanggal</label>
+                                        <input type="date" class="form-control" id="edit_tanggal{{ $d->id }}" name="tanggal" value="{{ $d->formatted_tanggal }}" required>
+                                    </div>
 
-                                        <div class="mb-3">
-                                            <label for="edit_status{{ $d->id }}" class="form-label">Status</label>
-                                            <input type="text" class="form-control" id="edit_status{{ $d->id }}" name="status" value="{{ $d->status }}" required>
-                                        </div>
+                                    <div class="mb-3">
+                                        <label for="edit_status{{ $d->id }}" class="form-label">Status</label>
+                                        <input type="text" class="form-control" id="edit_status{{ $d->id }}" name="status" value="{{ $d->status }}" required>
+                                    </div>
 
-                                        <button type="submit" class="btn btn-success">Perbarui</button>
-                                    </form>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                </div>
+                                    <button type="submit" class="btn btn-success">Perbarui</button>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                             </div>
                         </div>
                     </div>
-                    @endforeach --}}
-
-                    <!-- Modal Konfirmasi Hapus Data -->
-                    <div class="modal fade" id="konfirmasiHapusModal" tabindex="-1" aria-labelledby="konfirmasiHapusModalLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="konfirmasiHapusModalLabel">Konfirmasi Hapus Data</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    Apakah Anda yakin ingin menghapus data ini?
-                                </div>
-                                <div class="modal-footer">
-                                    <form id="deleteForm" method="POST" action="">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                        <button type="submit" class="btn btn-danger">Hapus</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    
-
-                    <!-- Alert untuk hasil operasi -->
-                    @if(session('success'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('success') }}
-                        </div>
-                    @endif
-                    @if($errors->any())
-                        <div class="alert alert-danger" role="alert">
-                            @foreach ($errors->all() as $error)
-                                <div>{{ $error }}</div>
-                            @endforeach
-                        </div>
-                    @endif
-
-                    <!-- Tabel dengan data -->
-                    <table class="table datatable">
-                        <thead>
-                            <tr>
-                                <th>Nomor</th>
-                                <th>Petugas</th>
-                                <th>sales</th>
-                                <th>Depo</th>
-                                <th>Tanggal</th>
-                                <th>Status</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($transaksiDistribusiSales as $d)
-                            <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td>{{ $d->petugas->username }}</td>
-                                <td>{{ $d->sales->nama }}</td>
-                                <td>{{ $d->depo->nama }}</td>
-                                <td>{{ $d->tanggal }}</td>
-                                <td>{{ $d->status }}</td>
-                                <td>
-                                     <!-- Tombol Lihat -->
-                                    <a class="btn btn-sm btn-info" href="{{ route('admin.transaksi_distribusi_sales.show', ['id' => $d->id]) }}">Lihat</a>
-
-                                    {{-- <a class="btn btn-sm btn-primary" href="#editDataModal{{ $d->id }}" data-bs-toggle="modal">Edit</a> --}}
-                                    <!-- Tombol Hapus -->
-                                    <a type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#konfirmasiHapusModal" data-id="{{ $d->id }}">Hapus</a>
-
-                                </td>
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="7" class="text-center">Tidak ada data</td>
-                            </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
                 </div>
+                @endforeach --}}
+
+                <!-- Modal Konfirmasi Hapus Data -->
+                <div class="modal fade" id="konfirmasiHapusModal" tabindex="-1" aria-labelledby="konfirmasiHapusModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="konfirmasiHapusModalLabel">Konfirmasi Hapus Data</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                Apakah Anda yakin ingin menghapus data ini?
+                            </div>
+                            <div class="modal-footer">
+                                <form id="deleteForm" method="POST" action="">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                    <button type="submit" class="btn btn-danger">Hapus</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <!-- Alert untuk hasil operasi -->
+                @if(session('success'))
+                <div class="alert alert-success" role="alert">
+                    {{ session('success') }}
+                </div>
+                @endif
+                @if($errors->any())
+                <div class="alert alert-danger" role="alert">
+                    @foreach ($errors->all() as $error)
+                    <div>{{ $error }}</div>
+                    @endforeach
+                </div>
+                @endif
+
+                <!-- Tabel dengan data -->
+                <table class="table datatable">
+                    <thead>
+                        <tr>
+                            <th>Nomor</th>
+                            <th>Petugas</th>
+                            <th>sales</th>
+                            <th>Depo</th>
+                            <th>Tanggal</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($transaksiDistribusiSales as $d)
+                        <tr>
+                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ $d->petugas->username }}</td>
+                            <td>{{ $d->sales->nama }}</td>
+                            <td>{{ $d->depo->nama }}</td>
+                            <td>{{ $d->tanggal }}</td>
+                            <td>{{ $d->status }}</td>
+                            <td>
+                                <!-- Tombol Lihat -->
+                                <a class="btn btn-sm btn-info" href="{{ route('admin.transaksi_distribusi_sales.show', ['id' => $d->id]) }}">Lihat</a>
+
+                                {{-- <a class="btn btn-sm btn-primary" href="#editDataModal{{ $d->id }}" data-bs-toggle="modal">Edit</a> --}}
+                                <!-- Tombol Hapus -->
+                                <a type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#konfirmasiHapusModal" data-id="{{ $d->id }}">Hapus</a>
+
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="7" class="text-center">Tidak ada data</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </div>
+    </div>
     </div>
 </section>
 
