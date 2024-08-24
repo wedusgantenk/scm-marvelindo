@@ -253,7 +253,7 @@ Distribusi ke Depo
                             @forelse ($transaksiDistribusiDepos as $d)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
-                                <td>{{ $d->petugas->username }}</td>
+                                <td>{{ $d->petugas->username ?? 'N/A' }}</td>
                                 <td>{{ $d->cluster->nama ?? 'N/A' }}</td>
                                 <td>{{ $d->depo->nama ?? 'N/A' }}</td>
                                 <td>{{ $d->tanggal }}</td>
