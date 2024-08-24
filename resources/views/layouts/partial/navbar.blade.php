@@ -3,7 +3,7 @@
 
 <div class="d-flex align-items-center justify-content-between">
   <a href="{{route('dashboard')}}" class="logo d-flex align-items-center">
-    <img src="mv-logo.png" alt="logo" style="max-width: 40px; height: auto;">
+    <img src="{{asset('mv-logo.png')}}" alt="logo" style="max-width: 40px; height: auto;">
     <span class="d-none d-lg-block">Marvelindo Utama</span>
   </a>
   <i class="bi bi-list toggle-sidebar-btn"></i>

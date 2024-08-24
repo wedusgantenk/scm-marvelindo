@@ -14,10 +14,10 @@ Histori Barang
 
                     <!-- Alert untuk notifikasi -->
                     @if(session('success'))
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            {{ session('success') }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ session('success') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
                     @endif
 
                     @if(session('error'))
@@ -26,10 +26,6 @@ Histori Barang
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     @endif
-
-                    <!-- Tombol Tambah Data -->
-                    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#tambahHistoriBarangModal">Tambah Histori Barang</button>
-
                     <!-- Modal Tambah Data -->
                     <div class="modal fade" id="tambahHistoriBarangModal" tabindex="-1" aria-labelledby="tambahHistoriBarangModalLabel" aria-hidden="true">
                         <div class="modal-dialog">
@@ -124,96 +120,30 @@ Histori Barang
                                 <th>Asal</th>
                                 <th>Tujuan</th>
                                 <th>Tanggal</th>
-                                <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
+                            @if($data->isEmpty())
+                            <tr>
+                                <td colspan="6" class="text-center">Data tidak ditemukan.</td>
+                            </tr>
+                            @else
                             @foreach($data as $index => $histori)
-                            <tr data-id="{{ $histori['id'] }}">
+                            <tr>
                                 <td>{{ $index + 1 }}</td>
-                                <td class="editable" data-field="id_detail_barang" data-detail-barang-id="{{ $histori['detail_barang']['id'] ?? '' }}">{{ $histori['detail_barang']['kode_unik'] ?? 'TIDAK DITEMUKAN DATA' }}</td>
-                                <td class="editable" data-field="type">{{ $histori['type'] }}</td>
-                                <td class="editable" data-field="lokasi_asal_id" data-lokasi-asal-id="{{ $histori['lokasi_asal']['id'] ?? '' }}">{{ $histori['lokasi_asal']['nama'] ?? 'TIDAK DITEMUKAN DATA' }}</td>
-                                <td class="editable" data-field="id_lokasi_tujuan" data-lokasi-tujuan-id="{{ $histori['lokasi_tujuan']['id'] ?? '' }}">{{ $histori['lokasi_tujuan']['nama'] ?? 'TIDAK DITEMUKAN DATA' }}</td>
-                                <td class="editable" data-field="tanggal">{{ \Carbon\Carbon::parse($histori['tanggal'])->format('d F Y') }}</td>
-                                <td>
-                                    <button class="btn btn-sm btn-danger hapus-btn" data-bs-toggle="modal" data-bs-target="#konfirmasiHapusModal">Hapus</button>
-                                </td>
+                                <td>{{ $histori->detail_barang->kode_unik ?? 'TIDAK DITEMUKAN DATA' }}</td>
+                                <td>{{ $histori->type }}</td>
+                                <td>{{ $histori->id_lokasi_asal ?? 'TIDAK DITEMUKAN DATA' }}</td>
+                                <td>{{ $histori->id_lokasi_tujuan ?? 'TIDAK DITEMUKAN DATA' }}</td>
+                                <td>{{ \Carbon\Carbon::parse($histori->tanggal)->format('d F Y') }}</td>
                             </tr>
                             @endforeach
+                            @endif
                         </tbody>
                     </table>
-                    <!-- End Table with row editing -->
                 </div>
             </div>
         </div>
     </div>
 </section>
 @endsection
-
-@push('scripts')
-<script>
-    $(document).ready(function() {
-        var originalData = {};
-        var rowToDelete;
-
-        function showAlert(message, type) {
-            var alertElement = $('#editAlert');
-            alertElement.removeClass('alert-success alert-danger').addClass('alert-' + type);
-            alertElement.text(message);
-            alertElement.fadeIn().delay(3000).fadeOut();
-        }
-
-        $('#simpanHistoriBarangBtn').on('click', function() {
-            $('#historiBarangForm').submit();
-        });
-
-        $('#historiBarangForm').on('submit', function(e) {
-            e.preventDefault();
-            $.ajax({
-                url: '{{ route("admin.histori_barang.store") }}',
-                method: 'POST',
-                data: $(this).serialize(),
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                success: function(response) {
-                    showAlert('Data berhasil ditambahkan', 'success');
-                    $('#tambahHistoriBarangModal').modal('hide');
-                    $('#historiBarangForm')[0].reset();
-                    location.reload();
-                },
-                error: function(xhr) {
-                    console.log(xhr.responseText);
-                    showAlert('Gagal menambahkan data: ' + xhr.responseText, 'danger');
-                }
-            });
-        });
-
-        $('#historiBarangTable').on('click', '.hapus-btn', function() {
-            rowToDelete = $(this).closest('tr');
-        });
-
-        $('#konfirmasiHapusBtn').on('click', function() {
-            var id = rowToDelete.data('id');
-            $.ajax({
-                url: '{{ route("admin.histori_barang.delete", "") }}/' + id,
-                method: 'POST',
-                data: {
-                    _token: '{{ csrf_token() }}',
-                    _method: 'DELETE'
-                },
-                success: function(response) {
-                    showAlert('Data berhasil dihapus', 'success');
-                    rowToDelete.remove();
-                    $('#konfirmasiHapusModal').modal('hide');
-                },
-                error: function(xhr) {
-                    console.log(xhr.responseText);
-                    showAlert('Gagal menghapus data: ' + xhr.responseText, 'danger');
-                }
-            });
-        });
-    });
-</script>
-@endpush

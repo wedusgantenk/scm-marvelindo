@@ -19,6 +19,8 @@ class DashboardController extends Controller
 
     public function index()
     {
+        // Menghitung jumlah barang
+        $jumlahBarang = Barang::count();
         $totalbarang = Barang::count();
         $totalpetugas = Petugas::count();
         $totalsales = Sales::count();

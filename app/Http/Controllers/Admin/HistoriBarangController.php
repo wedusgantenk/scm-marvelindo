@@ -8,6 +8,7 @@ use App\Models\DetailBarang;
 use App\Models\Cluster;
 use App\Models\Depo;
 use App\Models\HistoriBarang;
+use App\Models\ViewHistory;
 use Illuminate\Http\Request;
 
 class HistoriBarangController extends Controller
@@ -17,9 +18,9 @@ class HistoriBarangController extends Controller
         $this->middleware('auth');
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $data = HistoriBarang::with(['detail_barang', 'lokasi_asal', 'lokasi_tujuan'])->get();
+        $data = ViewHistory::with(['detail_barang', 'lokasi_asal', 'lokasi_tujuan'])->get();
         $detail_barang = DetailBarang::all();
         $cluster = Cluster::all();
         $depo = Depo::all();
@@ -55,14 +56,14 @@ class HistoriBarangController extends Controller
             ]
         );
 
-        HistoriBarang::create($request->all());
+        ViewHistory::create($request->all());
 
         return redirect()->route('admin.histori_barang')->with('success', 'histori barang telah ditambahkan');
     }
 
     public function edit($id)
     {
-        $data = HistoriBarang::findOrFail($id);
+        $data = ViewHistory::findOrFail($id);
         $detail_barang = DetailBarang::all();
         $cluster = Cluster::all();
         $depo = Depo::all();
@@ -88,7 +89,7 @@ class HistoriBarangController extends Controller
             ]
         );
 
-        $historiBarang = HistoriBarang::findOrFail($id);
+        $historiBarang = ViewHistory::findOrFail($id);
         $historiBarang->update($request->all());
 
         return redirect()->route('admin.histori_barang')->with('success', 'histori telah diubah');
@@ -96,7 +97,7 @@ class HistoriBarangController extends Controller
 
     public function destroy($id)
     {
-        $historiBarang = HistoriBarang::findOrFail($id);
+        $historiBarang = ViewHistory::findOrFail($id);
         $historiBarang->delete();
 
         return redirect()->route('admin.histori_barang')->with('success', 'histori telah dihapus');
