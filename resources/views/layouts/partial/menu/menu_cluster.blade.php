@@ -45,13 +45,6 @@
             </li>
         </ul>
     </li>
-
-    <li class="nav-item">
-        <a class="nav-link {{ Route::currentRouteName() == 'admin.petugas' ? '' : 'collapsed' }}" href={{ route('admin.petugas')}}>
-            <i class="bi bi-person-vcard"></i>
-            <span>Petugas</span>
-        </a>
-    </li>
     <li class="nav-item">
         <a class="nav-link {{ in_array(Route::currentRouteName(), ['admin.barang_masuk', 'admin.barang', 'admin.jenis_barang', 'admin.harga_barang', 'admin.histori_barang']) ? '' : 'collapsed' }}" data-bs-target="#barang-nav" data-bs-toggle="collapse" href="#">
             <i class="bi bi-box-seam"></i><span>Manajemen Barang</span><i class="bi bi-chevron-down ms-auto"></i>

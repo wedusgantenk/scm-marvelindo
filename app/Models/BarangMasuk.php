@@ -33,6 +33,6 @@ class BarangMasuk extends Model
     }
     public function cluster()
     {
-        return $this->belongsTo(Cluster::class, 'id_cluster', 'id');
+        return $this->belongsTo(Cluster::class, 'kode_cluster', 'kode_cluster');
     }
 }

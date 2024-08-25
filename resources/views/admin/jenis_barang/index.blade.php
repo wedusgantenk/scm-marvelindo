@@ -11,6 +11,7 @@ Jenis Barang
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Jenis Barang</h5>
+                    @notDepo
                     <!-- Tombol Tambah Data -->
                     <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#tambahDataModal">Tambah Data</button>
                     <!-- Modal Tambah Data -->
@@ -54,6 +55,7 @@ Jenis Barang
                             </div>
                         </div>
                     </div>
+                    @endnotDepo
                     <!-- Alert untuk hasil pengeditan -->
                     <div id="editAlert" class="alert" style="display: none;" role="alert"></div>
                     <!-- Table with row editing -->
@@ -62,7 +64,9 @@ Jenis Barang
                             <tr>
                                 <th>Nomor</th>
                                 <th>Nama Jenis Barang</th>
+                                @notDepo
                                 <th>Aksi</th>
+                                @endnotDepo
                             </tr>
                         </thead>
                         <tbody>
@@ -70,16 +74,23 @@ Jenis Barang
                             <tr data-id="{{ $d['id'] }}">
                                 <td>{{ $loop->iteration }}</td>
                                 <td class="editable" data-field="nama">{{$d['nama']}}</td>
+                                @notDepo
                                 <td>
                                     <button class="btn btn-sm btn-primary edit-btn">Edit</button>
                                     <button class="btn btn-sm btn-success save-btn" style="display:none;">Simpan</button>
                                     <button class="btn btn-sm btn-danger cancel-btn" style="display:none;">Batal</button>
                                     <button class="btn btn-sm btn-danger hapus-btn" data-bs-toggle="modal" data-bs-target="#konfirmasiHapusModal">Hapus</button>
                                 </td>
+                                @endnotDepo
                             </tr>
                             @empty
                             <tr>
+                                @notDepo
                                 <td colspan="3" class="text-center">Tidak ada data</td>
+                                @endnotDepo
+                                @depo
+                                <td colspan="2" class="text-center">Tidak ada data</td>
+                                @enddepo
                             </tr>
                             @endforelse
                         </tbody>
@@ -106,6 +117,7 @@ Jenis Barang
             alertElement.fadeIn().delay(3000).fadeOut();
         }
 
+        @notDepo
         $('#simpanDataBtn').on('click', function() {
             $('#jenisBarangForm').submit();
         });
@@ -214,6 +226,7 @@ Jenis Barang
                 }
             });
         });
+        @endnotDepo
     });
 </script>
 @endpush

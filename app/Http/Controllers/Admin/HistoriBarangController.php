@@ -10,6 +10,7 @@ use App\Models\Depo;
 use App\Models\HistoriBarang;
 use App\Models\ViewHistory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class HistoriBarangController extends Controller
 {
@@ -20,7 +21,21 @@ class HistoriBarangController extends Controller
 
     public function index(Request $request)
     {
-        $data = ViewHistory::with(['detail_barang', 'lokasi_asal', 'lokasi_tujuan'])->get();
+        if (Auth::user()->hak_akses == "cluster") {
+            $idCluster = Auth::user()->jenis;
+            $cluster = Cluster::where('id', $idCluster)->first();
+            $kode_cluster = $cluster ? $cluster->kode_cluster : null;
+            $detailBarangIds = DetailBarang::whereHas('barang_masuk', function ($query) use ( $kode_cluster) {
+                $query->where('kode_cluster',  $kode_cluster);
+            })->pluck('kode_unik');
+
+            $data = ViewHistory::with(['detail_barang', 'lokasi_asal', 'lokasi_tujuan'])
+                ->whereIn('id_detail_barang', $detailBarangIds)
+                ->get();
+        } else {
+            $data = ViewHistory::with(['detail_barang', 'lokasi_asal', 'lokasi_tujuan'])->get();
+        }
+
         $detail_barang = DetailBarang::all();
         $cluster = Cluster::all();
         $depo = Depo::all();

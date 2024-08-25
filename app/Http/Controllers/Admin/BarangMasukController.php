@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Imports\BarangMasukImport;
 use App\Models\Barang;
+use App\Models\Cluster;
 use App\Models\BarangMasuk;
 use App\Models\DetailBarang;
 use Illuminate\Http\Request;
@@ -22,7 +23,15 @@ class BarangMasukController extends Controller
 
     public function index()
     {
-        $data = BarangMasuk::with('petugas', 'barang', 'jenis_barang', 'cluster')->get();
+        if (Auth::user()->hak_akses == "cluster") {
+            $idCluster = Auth::user()->jenis;            
+            $cluster = Cluster::where('id', $idCluster)->first();            
+            $kode_cluster = $cluster ? $cluster->kode_cluster : null;
+            $data = BarangMasuk::with('petugas', 'barang', 'jenis_barang', 'cluster')->where('kode_cluster', $kode_cluster)->get();
+        } else {
+            $data = BarangMasuk::with('petugas', 'barang', 'jenis_barang', 'cluster')->get();
+        }
+                
         return view('admin.barang_masuk.index', compact('data'));
     }
 
@@ -47,7 +56,13 @@ class BarangMasukController extends Controller
 
             foreach ($data as $dat) {
                 foreach ($dat as $d) {
-                    $kode_cluster = strtolower(explode('_', $d['gudang'])[1]);
+                    if (Auth::user()->hak_akses == "cluster") {
+                        $idCluster = Auth::user()->jenis;
+                        $cluster = Cluster::where('id', $idCluster)->first();
+                        $kode_cluster = $cluster ? $cluster->kode_cluster : null;
+                    } else {
+                        $kode_cluster = strtolower(explode('_', $d['gudang'])[1]);
+                    }                                        
 
                     $data_barang = Barang::firstOrCreate([
                         'id_jenis' => 1,

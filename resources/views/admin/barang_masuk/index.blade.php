@@ -60,7 +60,7 @@
                             <tr>
                                 <th>Nomor</th>
                                 <th>Tanggal</th>
-                                <th>Kode Cluster</th>
+                                <th>Nama Cluster</th>
                                 <th>Nama Barang</th>
                                 <th>Nomor DO</th>
                                 <th>Nomor PO</th>
@@ -72,7 +72,7 @@
                             <tr>
                                 <td class="text-center">{{ $loop->iteration }}</td>
                                 <td>{{ \Carbon\Carbon::parse($d['tanggal'])->locale('id')->isoFormat('D MMMM YYYY') }}</td>
-                                <td class="text-center">{{ $d->kode_cluster ?? 'N/A' }}</td>
+                                <td class="text-center">{{ $d->cluster->nama ?? 'N/A' }}</td>
                                 <td>{{ $d->barang->nama }}</td>
                                 <td>{{ $d->no_do }}</td>
                                 <td>{{ $d->no_po }}</td>

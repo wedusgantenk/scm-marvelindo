@@ -11,15 +11,15 @@ Barang
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Daftar Barang</h5>
-
+                    @notDepo
                     <div class="mb-3">
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahBarangModal">
                             Tambah
                         </button>
-                        <a href="{{ route('admin.barang.import') }}" class="btn btn-success">Import Barang</a>
+                        {{-- <a href="{{ route('admin.barang.import') }}" class="btn btn-success">Import Barang</a> --}}
                         <a href="{{ route('admin.barang.export') }}" class="btn btn-info">Export Barang</a>
                     </div>
-
+                    @endnotDepo
                     <!-- Alert untuk notifikasi -->
                     <div id="alertContainer"></div>
 
@@ -31,7 +31,9 @@ Barang
                                 <th>Jenis Barang</th>
                                 <th>Gambar</th>
                                 <th>Keterangan</th>
+                                @notDepo
                                 <th>Aksi</th>
+                                @endnotDepo
                             </tr>
                         </thead>
                         <tbody>
@@ -54,16 +56,24 @@ Barang
                                 <td class="editable" data-field="keterangan">
                                     {{ Str::limit($d['keterangan'], 50) }}
                                 </td>
+                                @notDepo
                                 <td>
                                     <button class="btn btn-sm btn-warning edit-btn">Edit</button>
                                     <button class="btn btn-sm btn-success save-btn" style="display:none;">Simpan</button>
                                     <button class="btn btn-sm btn-danger cancel-btn" style="display:none;">Batal</button>
                                     <button class="btn btn-sm btn-danger hapus-btn" data-bs-toggle="modal" data-bs-target="#konfirmasiHapusModal">Hapus</button>
                                 </td>
+                                @endnotDepo
                             </tr>
+                            
                             @empty
                             <tr>
+                                @notDepo
                                 <td colspan="6" class="text-center">Tidak ada data</td>
+                                @endnotDepo
+                                @depo
+                                <td colspan="5" class="text-center">Tidak ada data</td>
+                                @enddepo
                             </tr>
                             @endforelse
                         </tbody>
@@ -73,6 +83,7 @@ Barang
         </div>
     </div>
 
+    @notDepo
     <!-- Modal Tambah Barang -->
     <div class="modal fade" id="tambahBarangModal" tabindex="-1" aria-labelledby="tambahBarangModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -140,6 +151,7 @@ Barang
             </div>
         </div>
     </div>
+    @endnotDepo
 
 </section>
 @endsection
@@ -161,6 +173,7 @@ Barang
             }, 3000);
         }
 
+        @notDepo
         $('#barangTable').on('click', '.edit-btn', function() {
             var row = $(this).closest('tr');
             row.find('.editable').attr('contenteditable', true).addClass('editing');
@@ -276,6 +289,7 @@ Barang
                 }
             });
         });
+        @endnotDepo
     });
 </script>
 @endpush

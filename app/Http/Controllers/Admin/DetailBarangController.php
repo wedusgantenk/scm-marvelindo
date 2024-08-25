@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Barang;
+use App\Models\Cluster;
 use App\Models\BarangMasuk;
 use App\Models\DetailBarang;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -18,7 +20,18 @@ class DetailBarangController extends Controller
 
     public function index()
     {
-        $data = DetailBarang::with('barang', 'barang_masuk')->get();
+        if (Auth::user()->hak_akses == "cluster") {
+            $idCluster = Auth::user()->jenis;
+            $cluster = Cluster::where('id', $idCluster)->first();
+            $kode_cluster = $cluster ? $cluster->kode_cluster : null;
+            $data = DetailBarang::whereHas('barang_masuk', function ($query) use ($kode_cluster) {
+                $query->where('kode_cluster', $kode_cluster);
+            })->with('barang', 'barang_masuk')->get();
+
+        } else {
+            $data = DetailBarang::with('barang', 'barang_masuk')->get();
+        }
+                
         $barang = Barang::all();
         $barang_masuk = BarangMasuk::all();
         return view('admin.detail_barang.index', compact('data', 'barang', 'barang_masuk'));
