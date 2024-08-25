@@ -106,4 +106,10 @@
             </li>
         </ul>
     </li>
+    <li class="nav-item">
+        <a class="nav-link {{ Route::currentRouteName() == 'admin.pembayaran' ? '' : 'collapsed' }}" href={{ route('admin.pembayaran')}}>
+            <i class="bi bi-credit-card"></i>
+            <span>Pembayaran</span>
+        </a>
+    </li>
 </ul>

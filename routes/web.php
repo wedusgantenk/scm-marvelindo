@@ -145,6 +145,10 @@ Route::get('barang_masuk', [App\Http\Controllers\Admin\BarangMasukController::cl
 Route::post('barang_masuk/import', [App\Http\Controllers\Admin\BarangMasukController::class, 'import_excel'])->name('admin.barang_masuk.import_excel')->middleware(['checkRole:admin']);
 Route::delete('barang_masuk/delete', [App\Http\Controllers\Admin\BarangMasukController::class, 'destroy'])->name('admin.barang_masuk.delete')->middleware(['checkRole:admin']);
 
+Route::get('pembayaran', [App\Http\Controllers\Admin\PembayaranController::class, 'index'])->name('admin.pembayaran')->middleware(['checkRole:admin']);
+Route::put('pembayaran/{id}', [App\Http\Controllers\Admin\PembayaranController::class, 'update'])->name('admin.pembayaran.update')->middleware(['checkRole:admin']);
+Route::get('pembayaran/getData', [App\Http\Controllers\Admin\PembayaranController::class, 'getData'])->name('admin.pembayaran.getData')->middleware(['checkRole:admin']);
+
 // Route::post('barang_masuk', [App\Http\Controllers\Admin\BarangMasukController::class, 'store'])->name('admin.barang_masuk.store')->middleware(['checkRole:admin']);
 // Route::put('barang_masuk/{id}', [App\Http\Controllers\Admin\BarangMasukController::class, 'update'])->name('admin.barang_masuk.update')->middleware(['checkRole:admin']);
 // Route::delete('barang_masuk/{id}', [App\Http\Controllers\Admin\BarangMasukController::class, 'destroy'])->name('admin.barang_masuk.delete')->middleware(['checkRole:admin']);
