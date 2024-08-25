@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Depo;
 use App\Models\Sales;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class SalesController extends Controller
@@ -17,8 +18,15 @@ class SalesController extends Controller
 
     public function index()
     {
-        $data = Sales::with('depo')->get();
-        $depo = Depo::all();
+        if (Auth::user()->hak_akses == "depo") {
+            $idDepo = Auth::user()->jenis;
+            $data = Sales::with('depo')->where('id_depo', $idDepo)->get();
+            $depo = Depo::all();
+        } else {
+            $data = Sales::with('depo')->get();
+            $depo = Depo::all();
+        }
+                
         return view('admin.sales.index', ['data' => $data, 'depo' => $depo]);
     }
 

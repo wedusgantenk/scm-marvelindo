@@ -47,6 +47,7 @@ Outlet
                                                 @endforeach
                                             </select>
                                         </div>
+                                        @notDepo
                                         <div class="mb-3">
                                             <label for="depo_id" class="form-label">Depo</label>
                                             <select class="form-select" id="depo_id" name="depo_id" required>
@@ -56,6 +57,7 @@ Outlet
                                                 @endforeach
                                             </select>
                                         </div>
+                                        @endnotDepo
                                     </form>
                                 </div>
                                 <div class="modal-footer">
@@ -107,7 +109,12 @@ Outlet
                                 <td class="editable" data-field="nama">{{ $outlet->nama }}</td>
                                 <td class="editable" data-field="bts_id" data-bts-id="{{ $outlet->bts->id ?? '' }}">{{ $outlet->bts->nama ?? 'N/A' }}</td>
                                 <td class="editable" data-field="jenis_id" data-jenis-id="{{ $outlet->jenisOutlet->id ?? '' }}">{{ $outlet->jenisOutlet->nama ?? 'N/A' }}</td>
+                                @notDepo
                                 <td class="editable" data-field="depo_id" data-depo-id="{{ $outlet->depo->id ?? '' }}">{{ $outlet->depo->nama ?? 'N/A' }}</td>
+                                @endnotDepo
+                                @depo
+                                <td>{{ $outlet->depo->nama ?? 'N/A' }}</td>
+                                @enddepo
                                 <td>
                                     <button class="btn btn-sm btn-primary edit-btn">Edit</button>
                                     <button class="btn btn-sm btn-success save-btn" style="display:none;">Simpan</button>
@@ -167,11 +174,20 @@ Outlet
 
         $('#outletTable').on('click', '.edit-btn', function() {
             var row = $(this).closest('tr');
+            originalData[row.data('id')] = {};
+            
+            row.find('.editable').each(function() {
+                var field = $(this).data('field');
+                originalData[row.data('id')][field] = $(this).text();                                                         
+            });
+            
             row.find('.editable').each(function() {
                 var field = $(this).data('field');
                 var currentText = $(this).text();
                 var currentId = $(this).data(field.replace('_id', '-id'));
+                
 
+                @notDepo
                 if (field === 'bts_id' || field === 'jenis_id' || field === 'depo_id') {
                     var selectHtml = '<select class="form-select editing-select" data-field="' + field + '">';
                     selectHtml += '<option value="">--Pilih--</option>';
@@ -195,16 +211,33 @@ Outlet
                 } else {
                     $(this).attr('contenteditable', true);
                 }
+                @endnotDepo
+
+                @depo
+                if (field === 'bts_id' || field === 'jenis_id') {
+                    var selectHtml = '<select class="form-select editing-select" data-field="' + field + '">';
+                    selectHtml += '<option value="">--Pilih--</option>';
+
+                    if (field === 'bts_id') {
+                        @foreach ($bts as $bt)
+                            selectHtml += '<option value="{{ $bt->id }}" ' + (currentId == {{ $bt->id }} ? 'selected' : '') + '>{{ $bt->nama }}</option>';
+                        @endforeach
+                    } else if (field === 'jenis_id') {
+                        @foreach ($jenisOutlet as $jo)
+                            selectHtml += '<option value="{{ $jo->id }}" ' + (currentId == {{ $jo->id }} ? 'selected' : '') + '>{{ $jo->nama }}</option>';
+                        @endforeach
+                    }
+
+                    selectHtml += '</select>';
+                    $(this).html(selectHtml);
+                } else {
+                    $(this).attr('contenteditable', true);
+                }
+                @enddepo
                 $(this).addClass('editing');
             });
             row.find('.edit-btn').hide();
-            row.find('.save-btn, .cancel-btn').show();
-
-            originalData[row.data('id')] = {};
-            row.find('.editable').each(function() {
-                var field = $(this).data('field');
-                originalData[row.data('id')][field] = $(this).text();
-            });
+            row.find('.save-btn, .cancel-btn').show();            
         });
 
         $('#outletTable').on('click', '.save-btn', function() {
@@ -250,6 +283,9 @@ Outlet
         $('#outletTable').on('click', '.cancel-btn', function() {
             var row = $(this).closest('tr');
             var id = row.data('id');
+            
+            console.log('Cancel clicked for id:', id);
+            console.log('Original Data:', originalData[id]);            
 
             if (originalData[id]) {
                 row.find('.editable').each(function() {

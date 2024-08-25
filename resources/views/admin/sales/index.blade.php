@@ -9,8 +9,9 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Sales</h5>
+                    @notDepo
                     <!-- Tombol Tambah Data -->
-                    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#tambahDataModal">Tambah Data</button>
+                    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#tambahDataModal">Tambah Data</button>        
                     <!-- Modal Tambah Data -->
                     <div class="modal fade" id="tambahDataModal" tabindex="-1" aria-labelledby="tambahDataModalLabel" aria-hidden="true">
                         <div class="modal-dialog">
@@ -81,6 +82,7 @@
                             </div>
                         </div>
                     </div>
+                    @endnotDepo
                     <!-- Alert untuk hasil pengeditan -->
                     <div id="editAlert" class="alert" style="display: none;" role="alert"></div>
                     <!-- Table with row editing -->
@@ -92,7 +94,9 @@
                                 <th>Depo</th>
                                 <th>Area</th>
                                 <th>Status</th>
+                                @notDepo
                                 <th>Aksi</th>
+                                @endnotDepo
                             </tr>
                         </thead>
                         <tbody>
@@ -103,17 +107,26 @@
                                 <td class="editable" data-field="id_depo" data-depo-id="{{ $d->depo->id ?? '' }}">{{ $d->depo->nama ?? 'NA'}}</td>
                                 <td class="editable" data-field="area">{{ $d['area'] ?? '' }}</td>
                                 <td class="editable" data-field="status">{{ $d['status'] ?? '' }}</td>
+                                @notDepo
                                 <td>
                                     <button class="btn btn-primary btn-sm editBtn" data-id="{{ $d['id'] }}">Edit</button>
                                     <button class="btn btn-sm btn-success saveBtn" style="display:none;">Simpan</button>
                                     <button class="btn btn-sm btn-danger cancelBtn" style="display:none;">Batal</button>
                                     <button class="btn btn-danger btn-sm deleteBtn" data-id="{{ $d['id'] }}" data-bs-toggle="modal" data-bs-target="#konfirmasiHapusModal">Hapus</button>
                                 </td>
+                                @endnotDepo
                             </tr>
                             @empty
+                            @notDepo                            
                             <tr>
                                 <td colspan="6" class="text-center">Tidak ada data</td>
                             </tr>
+                            @endnotDepo
+                            @depo
+                            <tr>
+                                <td colspan="5" class="text-center">Tidak ada data</td>
+                            </tr>
+                            @enddepo
                             @endforelse
                         </tbody>
                     </table>

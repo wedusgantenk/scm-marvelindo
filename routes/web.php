@@ -35,7 +35,7 @@ Route::post('jenisbarang', [App\Http\Controllers\Admin\JenisBarangController::cl
 Route::put('jenisbarang/{id}', [App\Http\Controllers\Admin\JenisBarangController::class, 'update'])->name('admin.jenis_barang.update')->middleware(['checkRole:admin']);
 Route::delete('jenisbarang/{id}', [App\Http\Controllers\Admin\JenisBarangController::class, 'destroy'])->name('admin.jenis_barang.delete')->middleware(['checkRole:admin']);
 
-Route::get('barang', [App\Http\Controllers\Admin\BarangController::class, 'index'])->name('admin.barang')->middleware(['checkRole:admin']);
+Route::get('barang', [App\Http\Controllers\Admin\BarangController::class, 'index'])->name('admin.barang')->middleware(['checkRole:admin,cluster,depo']);
 Route::post('barang', [App\Http\Controllers\Admin\BarangController::class, 'store'])->name('admin.barang.store')->middleware(['checkRole:admin']);
 Route::put('barang/{id}', [App\Http\Controllers\Admin\BarangController::class, 'update'])->name('admin.barang.update')->middleware(['checkRole:admin']);
 Route::delete('barang/{id}', [App\Http\Controllers\Admin\BarangController::class, 'destroy'])->name('admin.barang.delete')->middleware(['checkRole:admin']);
@@ -43,10 +43,10 @@ Route::get('barang/import', [App\Http\Controllers\Admin\BarangController::class,
 Route::post('barang/import', [App\Http\Controllers\Admin\BarangController::class, 'import_excel'])->name('admin.barang.import_excel')->middleware(['checkRole:admin']);
 Route::get('barang/export', [App\Http\Controllers\Admin\BarangController::class, 'export'])->name('admin.barang.export')->middleware(['checkRole:admin']);
 
-Route::get('bts', [App\Http\Controllers\Admin\BtsController::class, 'index'])->name('admin.bts')->middleware(['checkRole:admin']);
-Route::post('bts', [App\Http\Controllers\Admin\BtsController::class, 'store'])->name('admin.bts.store')->middleware(['checkRole:admin']);
-Route::put('bts/{id}', [App\Http\Controllers\Admin\BtsController::class, 'update'])->name('admin.bts.update')->middleware(['checkRole:admin']);
-Route::delete('bts/{id}', [App\Http\Controllers\Admin\BtsController::class, 'destroy'])->name('admin.bts.delete')->middleware(['checkRole:admin']);
+Route::get('bts', [App\Http\Controllers\Admin\BtsController::class, 'index'])->name('admin.bts')->middleware(['checkRole:admin,cluster']);
+Route::post('bts', [App\Http\Controllers\Admin\BtsController::class, 'store'])->name('admin.bts.store')->middleware(['checkRole:admin,cluster']);
+Route::put('bts/{id}', [App\Http\Controllers\Admin\BtsController::class, 'update'])->name('admin.bts.update')->middleware(['checkRole:admin,cluster']);
+Route::delete('bts/{id}', [App\Http\Controllers\Admin\BtsController::class, 'destroy'])->name('admin.bts.delete')->middleware(['checkRole:admin,cluster']);
 
 Route::get('cluster', [App\Http\Controllers\Admin\ClusterController::class, 'index'])->name('admin.cluster')->middleware(['checkRole:admin']);
 Route::post('cluster', [App\Http\Controllers\Admin\ClusterController::class, 'store'])->name('admin.cluster.store')->middleware(['checkRole:admin']);
@@ -55,10 +55,10 @@ Route::delete('cluster/{id}', [App\Http\Controllers\Admin\ClusterController::cla
 Route::get('cluster/export', [App\Http\Controllers\Admin\ClusterController::class, 'export'])->name('admin.cluster.export')->middleware(['checkRole:admin']);
 Route::post('cluster/import', [App\Http\Controllers\Admin\ClusterController::class, 'import'])->name('admin.cluster.import')->middleware(['checkRole:admin']);
 
-Route::get('depo', [App\Http\Controllers\Admin\DepoController::class, 'index'])->name('admin.depo')->middleware(['checkRole:admin']);
-Route::post('depo', [App\Http\Controllers\Admin\DepoController::class, 'store'])->name('admin.depo.store')->middleware(['checkRole:admin']);
-Route::put('depo/{id}', [App\Http\Controllers\Admin\DepoController::class, 'update'])->name('admin.depo.update')->middleware(['checkRole:admin']);
-Route::delete('depo/{id}', [App\Http\Controllers\Admin\DepoController::class, 'destroy'])->name('admin.depo.delete')->middleware(['checkRole:admin']);
+Route::get('depo', [App\Http\Controllers\Admin\DepoController::class, 'index'])->name('admin.depo')->middleware(['checkRole:admin,cluster']);
+Route::post('depo', [App\Http\Controllers\Admin\DepoController::class, 'store'])->name('admin.depo.store')->middleware(['checkRole:admin,cluster']);
+Route::put('depo/{id}', [App\Http\Controllers\Admin\DepoController::class, 'update'])->name('admin.depo.update')->middleware(['checkRole:admin,cluster']);
+Route::delete('depo/{id}', [App\Http\Controllers\Admin\DepoController::class, 'destroy'])->name('admin.depo.delete')->middleware(['checkRole:admin,cluster']);
 
 Route::get('transaksi/distribusi_depo', [App\Http\Controllers\Admin\TransaksiDepoController::class, 'index'])->name('admin.transaksi_distribusi_depo')->middleware(['checkRole:admin']);
 Route::post('transaksi/distribusi_depo', [App\Http\Controllers\Admin\TransaksiDepoController::class, 'store'])->name('admin.transaksi_distribusi_depo.store')->middleware(['checkRole:admin']);
@@ -74,14 +74,14 @@ Route::get('/download-template-depo', function () {
 })->name('download-template-depo');
 
 
-Route::get('transaksi/distribusi_sales', [App\Http\Controllers\Admin\TransaksiSalesController::class, 'index'])->name('admin.transaksi_distribusi_sales')->middleware(['checkRole:admin']);
-Route::post('transaksi/distribusi_sales', [App\Http\Controllers\Admin\TransaksiSalesController::class, 'store'])->name('admin.transaksi_distribusi_sales.store')->middleware(['checkRole:admin']);
+Route::get('transaksi/distribusi_sales', [App\Http\Controllers\Admin\TransaksiSalesController::class, 'index'])->name('admin.transaksi_distribusi_sales')->middleware(['checkRole:admin,cluster,depo']);
+Route::post('transaksi/distribusi_sales', [App\Http\Controllers\Admin\TransaksiSalesController::class, 'store'])->name('admin.transaksi_distribusi_sales.store')->middleware(['checkRole:admin,cluster,depo']);
 // Route::put('transaksi/distribusi_sales/{id}', [App\Http\Controllers\Admin\TransaksiSalesController::class, 'update'])->name('admin.transaksi_distribusi_sales.update')->middleware(['checkRole:admin']);
-Route::delete('transaksi/distribusi_sales/{id}', [App\Http\Controllers\Admin\TransaksiSalesController::class, 'destroy'])->name('admin.transaksi_distribusi_sales.delete')->middleware(['checkRole:admin']);
+Route::delete('transaksi/distribusi_sales/{id}', [App\Http\Controllers\Admin\TransaksiSalesController::class, 'destroy'])->name('admin.transaksi_distribusi_sales.delete')->middleware(['checkRole:admin,cluster,depo']);
 // Route::get('transaksi/distribusi_sales/import', [App\Http\Controllers\Admin\TransaksiSalesController::class, 'import'])->name('admin.transaksi_distribusi_sales.import')->middleware(['checkRole:admin']);
-Route::post('transaksi/distribusi_sales/import', [App\Http\Controllers\Admin\TransaksiSalesController::class, 'import_excel'])->name('admin.transaksi_distribusi_sales.import_excel')->middleware(['checkRole:admin']);
+Route::post('transaksi/distribusi_sales/import', [App\Http\Controllers\Admin\TransaksiSalesController::class, 'import_excel'])->name('admin.transaksi_distribusi_sales.import_excel')->middleware(['checkRole:admin,cluster,depo']);
 // Route::get('transaksi/distribusi_sales/histori/{id}', [App\Http\Controllers\Admin\TransaksiSalesController::class, 'histori'])->name('admin.transaksi_distribusi_sales.histori')->middleware(['checkRole:admin']);
-Route::get('transaksi/distribusi_sales/{id}', [App\Http\Controllers\Admin\TransaksiSalesController::class, 'show'])->name('admin.transaksi_distribusi_sales.show')->middleware(['checkRole:admin']);
+Route::get('transaksi/distribusi_sales/{id}', [App\Http\Controllers\Admin\TransaksiSalesController::class, 'show'])->name('admin.transaksi_distribusi_sales.show')->middleware(['checkRole:admin,cluster,depo']);
 Route::get('/download-template-sales', function () {
     $filePath = storage_path('app/public/template_distribusisales/template_distribusisales.xlsx');
     return response()->download($filePath);
@@ -97,25 +97,25 @@ Route::post('transaksi/distribusi_sales/detail', [App\Http\Controllers\Admin\Tra
 Route::put('transaksi/distribusi_sales/detail/{id}', [App\Http\Controllers\Admin\TransaksiSalesDetailController::class, 'update'])->name('admin.transaksi_distribusi_sales.detail.update')->middleware(['checkRole:admin']);
 Route::delete('transaksi/distribusi_sales/detail/{id}', [App\Http\Controllers\Admin\TransaksiSalesDetailController::class, 'destroy'])->name('admin.transaksi_distribusi_sales.detail.delete')->middleware(['checkRole:admin']);
 
-Route::get('jenisoutlet', [App\Http\Controllers\Admin\JenisOutletController::class, 'index'])->name('admin.jenis_outlet')->middleware(['checkRole:admin']);
-Route::post('jenisoutlet', [App\Http\Controllers\Admin\JenisOutletController::class, 'store'])->name('admin.jenis_outlet.store')->middleware(['checkRole:admin']);
-Route::put('jenisoutlet/{id}', [App\Http\Controllers\Admin\JenisOutletController::class, 'update'])->name('admin.jenis_outlet.update')->middleware(['checkRole:admin']);
-Route::delete('jenisoutlet/{id}', [App\Http\Controllers\Admin\JenisOutletController::class, 'destroy'])->name('admin.jenis_outlet.delete')->middleware(['checkRole:admin']);
+Route::get('jenisoutlet', [App\Http\Controllers\Admin\JenisOutletController::class, 'index'])->name('admin.jenis_outlet')->middleware(['checkRole:admin,cluster']);
+Route::post('jenisoutlet', [App\Http\Controllers\Admin\JenisOutletController::class, 'store'])->name('admin.jenis_outlet.store')->middleware(['checkRole:admin,cluster']);
+Route::put('jenisoutlet/{id}', [App\Http\Controllers\Admin\JenisOutletController::class, 'update'])->name('admin.jenis_outlet.update')->middleware(['checkRole:admin,cluster']);
+Route::delete('jenisoutlet/{id}', [App\Http\Controllers\Admin\JenisOutletController::class, 'destroy'])->name('admin.jenis_outlet.delete')->middleware(['checkRole:admin,cluster']);
 
-Route::get('outlet', [App\Http\Controllers\Admin\OutletController::class, 'index'])->name('admin.outlet')->middleware(['checkRole:admin']);
-Route::post('outlet', [App\Http\Controllers\Admin\OutletController::class, 'store'])->name('admin.outlet.store')->middleware(['checkRole:admin']);
-Route::put('outlet/{id}', [App\Http\Controllers\Admin\OutletController::class, 'update'])->name('admin.outlet.update')->middleware(['checkRole:admin']);
-Route::delete('outlet/{id}', [App\Http\Controllers\Admin\OutletController::class, 'destroy'])->name('admin.outlet.delete')->middleware(['checkRole:admin']);
+Route::get('outlet', [App\Http\Controllers\Admin\OutletController::class, 'index'])->name('admin.outlet')->middleware(['checkRole:admin,cluster,depo']);
+Route::post('outlet', [App\Http\Controllers\Admin\OutletController::class, 'store'])->name('admin.outlet.store')->middleware(['checkRole:admin,cluster,depo']);
+Route::put('outlet/{id}', [App\Http\Controllers\Admin\OutletController::class, 'update'])->name('admin.outlet.update')->middleware(['checkRole:admin,cluster,depo']);
+Route::delete('outlet/{id}', [App\Http\Controllers\Admin\OutletController::class, 'destroy'])->name('admin.outlet.delete')->middleware(['checkRole:admin,cluster,depo']);
 
 Route::get('petugas', [App\Http\Controllers\Admin\PetugasController::class, 'index'])->name('admin.petugas')->middleware(['checkRole:admin']);
 Route::post('petugas', [App\Http\Controllers\Admin\PetugasController::class, 'store'])->name('admin.petugas.store')->middleware(['checkRole:admin']);
 Route::put('petugas/{id}', [App\Http\Controllers\Admin\PetugasController::class, 'update'])->name('admin.petugas.update')->middleware(['checkRole:admin']);
 Route::delete('petugas/{id}', [App\Http\Controllers\Admin\PetugasController::class, 'destroy'])->name('admin.petugas.delete')->middleware(['checkRole:admin']);
 
-Route::get('sales', [App\Http\Controllers\Admin\SalesController::class, 'index'])->name('admin.sales')->middleware(['checkRole:admin']);
-Route::post('sales', [App\Http\Controllers\Admin\SalesController::class, 'store'])->name('admin.sales.store')->middleware(['checkRole:admin']);
-Route::patch('sales/{id}', [App\Http\Controllers\Admin\SalesController::class, 'update'])->name('admin.sales.update')->middleware(['checkRole:admin']);
-Route::delete('sales/{id}', [App\Http\Controllers\Admin\SalesController::class, 'destroy'])->name('admin.sales.delete')->middleware(['checkRole:admin']);
+Route::get('sales', [App\Http\Controllers\Admin\SalesController::class, 'index'])->name('admin.sales')->middleware(['checkRole:admin,cluster,depo']);
+Route::post('sales', [App\Http\Controllers\Admin\SalesController::class, 'store'])->name('admin.sales.store')->middleware(['checkRole:admin,cluster,depo']);
+Route::patch('sales/{id}', [App\Http\Controllers\Admin\SalesController::class, 'update'])->name('admin.sales.update')->middleware(['checkRole:admin,cluster,depo']);
+Route::delete('sales/{id}', [App\Http\Controllers\Admin\SalesController::class, 'destroy'])->name('admin.sales.delete')->middleware(['checkRole:admin,cluster,depo']);
 
 Route::get('detailbarang', [App\Http\Controllers\Admin\DetailBarangController::class, 'index'])->name('admin.detail_barang')->middleware(['checkRole:admin']);
 Route::post('detailbarang', [App\Http\Controllers\Admin\DetailBarangController::class, 'store'])->name('admin.detail_barang.store')->middleware(['checkRole:admin']);

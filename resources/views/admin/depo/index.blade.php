@@ -24,6 +24,7 @@
                                             <label for="nama" class="form-label">Nama</label>
                                             <input type="text" class="form-control" id="nama" name="nama" required>
                                         </div>
+                                        @admin
                                         <div class="mb-3">
                                             <label for="id_cluster" class="form-label">Cluster</label>
                                             <select class="form-select" id="id_cluster" name="id_cluster" required>
@@ -33,6 +34,7 @@
                                                 @endforeach
                                             </select>
                                         </div>
+                                        @endadmin
                                         <div class="mb-3">
                                             <label for="alamat" class="form-label">Alamat</label>
                                             <textarea class="form-control" id="alamat" name="alamat" rows="3" required></textarea>
@@ -85,9 +87,14 @@
                             @forelse ($data as $d)
                             <tr data-id="{{ $d['id'] }}">
                                 <td class="editable" data-field="nama">{{ $d['nama'] }}</td>
+                                @admin
                                 <td class="editable" data-field="id_cluster" data-cluster-id="{{ $d->id_cluster }}">
                                     {{ $d->cluster ? $d->cluster->nama : 'Tidak ada cluster' }}
                                 </td>
+                                @endadmin
+                                @cluster
+                                <td>{{ $d->cluster ? $d->cluster->nama : 'Tidak ada cluster' }}</td>
+                                @endcluster
                                 <td class="editable" data-field="alamat">{{ $d->alamat }}</td>
                                 <td>
                                     <button class="btn btn-sm btn-primary edit-btn">Edit</button>
@@ -161,8 +168,9 @@
                 originalData[row.data('id')][field] = $(this).text();
             });
 
-            var clusterCell = row.find('[data-field="id_cluster"]');
-            var clusterId = clusterCell.data('cluster-id');
+            @admin
+            var clusterCell = row.find('[data-field="id_cluster"]');            
+            var clusterId = clusterCell.data('cluster-id');            
             var clusterOptions = @json($clusters);
             var select = $('<select class="form-control"></select>');
             clusterOptions.forEach(function(cluster) {
@@ -173,6 +181,7 @@
                 select.append(option);
             });
             clusterCell.html(select);
+            @endadmin
         });
 
         $('#depoTable').on('click', '.save-btn', function() {
@@ -183,9 +192,11 @@
             row.find('.editable').each(function() {
                 var field = $(this).data('field');
                 var value = $(this).text();
+                @admin
                 if (field === 'id_cluster') {
                     value = $(this).find('select').val();
                 }
+                @endadmin
                 data[field] = value;
             });
 
